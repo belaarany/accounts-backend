@@ -1,0 +1,32 @@
+{
+  "name": "goabela-accounts__server",
+  "version": "2.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "cli": "node cli/cli.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/belaarany/accounts__server.git"
+  },
+  "author": "Bela Arany",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/belaarany/accounts__server/issues"
+  },
+  "homepage": "https://github.com/belaarany/accounts__server#readme",
+  "devDependencies": {
+    "@types/node": "^12.6.2",
+    "prettier": "^1.18.2",
+    "tslint": "^5.18.0",
+    "tslint-config-prettier": "^1.18.0",
+    "tslint-plugin-prettier": "^2.0.1",
+    "typescript": "^3.5.3"
+  },
+  "dependencies": {
+    "chalk": "^2.4.2",
+    "clear": "^0.1.0"
+  }
+}

@@ -1,7 +1,6 @@
-import Vorpal = require("vorpal")
-const clear =require("clear")
-
+import Vorpal from "vorpal"
 import { CommandLoader } from "./loader"
+const clear = require("clear")
 
 const app = new Vorpal()
 

@@ -1,7 +1,7 @@
 import * as dotenv from "dotenv"
 import * as winston from "winston"
 import { App } from "./app"
-import { validateEnv, createWinston } from "./utils"
+import { createWinston, validateEnv } from "./utils"
 
 import { CarsController } from "./controllers/cars.controller"
 

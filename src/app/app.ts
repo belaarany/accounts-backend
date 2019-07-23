@@ -1,10 +1,11 @@
 import express from "express"
 import * as winston from "winston"
+import * as bodyParser from "body-parser"
 import { IController } from "./interfaces/controller.interface"
 import { httpDebugMiddleware } from "./middlewares/httpDebug.middleware"
 
 interface IApp {
-    controllers: Array<{new(): IController}>,
+    controllers: Array<new() => IController>,
     port: number,
 }
 
@@ -29,6 +30,7 @@ class App {
     }
 
     private registerMiddlewares(): void {
+        this.app.use(bodyParser.json())
         this.app.use(httpDebugMiddleware)
     }
 

@@ -1,7 +1,7 @@
 import { format, default as winston } from "winston"
 
 const myFormat = format.printf((info: any) => {
-    return `[${info.level.toUpperCase()}]: ${info.message}`
+    return `[${info.level}]: ${info.message}`
 })
 
 const createWinston = (): void => {
@@ -12,6 +12,7 @@ const createWinston = (): void => {
             })
         ],
         format: winston.format.combine(
+            format.colorize(),
             format.timestamp(),
             myFormat,
         )

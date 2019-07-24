@@ -13,11 +13,21 @@ class CarsController extends AController implements IController {
 
     private registerRoutes(): void {
         this.router
-            .get("/bests", (req, res) => {
-                console.log("best cars endpoint called")
+        .get("/bests", (req, res) => {
+            console.log("best cars endpoint called")
 
-                res.send("okay")
-            })
+            res.send("okay")
+        })
+        .get("/folks", (req, res) => {
+            console.log("best cars endpoint called")
+
+            res.send("okay")
+        })
+        .post("/folks", (req, res) => {
+            console.log("best cars endpoint called")
+
+            res.send("okay")
+        })
     }
 }
 

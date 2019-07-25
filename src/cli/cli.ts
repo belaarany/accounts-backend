@@ -1,10 +1,13 @@
 import Vorpal from "vorpal"
+import clear from "clear"
 import { CommandLoader } from "./loader"
 import { App } from "../app/app"
-const clear = require("clear")
 
 const cli = new Vorpal()
 const app: App = new App()
+
+clear()
+
 app.bootstrap()
 .then(() => {
     CommandLoader.load({

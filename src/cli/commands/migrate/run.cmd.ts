@@ -1,5 +1,5 @@
 import { Args, CommandInstance } from "vorpal"
-import { ACommand, ICommandLoad } from "../interfaces/command.interface"
+import { ACommand, ICommandLoad } from "../../interfaces/command.interface"
 const clear = require("clear")
 
 module.exports = class extends ACommand {
@@ -9,16 +9,18 @@ module.exports = class extends ACommand {
         this.app = props.app
         
         props.cli
-            .command("clear")
-            .alias("c")
-            .alias("cc")
-            .description("Clears the screen")
+            .command("migrate:run")
+            .alias("m:r")
+            .description("Runs all migrations")
             .action(this.action)
     }
 
     public action = (args: Args, done: () => void): void => {
-        clear()
+        this.app.getDatabaseConnection().runMigrations()
+        .then((res: any) => {
+            console.log({res})
 
-        done()
+            done()
+        })
     }
 }

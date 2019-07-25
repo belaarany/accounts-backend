@@ -10,7 +10,7 @@ abstract class AController {
     //public abstract registerRoutes(): void
 
     constructor() {
-        winston.info(`Controller "${this.constructor.name}" imported`)
+        
     }
 }
 

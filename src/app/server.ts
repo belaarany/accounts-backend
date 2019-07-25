@@ -16,7 +16,7 @@ class Server {
     public listen(port: number | "@env"): Promise<void> {
         return new Promise((resolve: () => void, reject: () => void) => {
             if (port === "@env") {
-                port = parseInt(process.env.APP_PORT || "8020")
+                port = Number(process.env.APP_PORT || "8020")
             }
 
             let express: express.Application = this.app.getExpress()
@@ -24,7 +24,7 @@ class Server {
             this.server = express.listen(port, () => {
                 // @ts-ignore
                 let at = this.server.address().address
-                winston.info(`Server started listening on ${at}${port} in env \'${express.settings.env}\'`)
+                winston.info(`Server started listening at ${at}${port} in env \'${express.settings.env}\'`)
 
                 resolve()
             })

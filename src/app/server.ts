@@ -1,81 +1,45 @@
 import * as http from "http"
-import * as dotenv from "dotenv"
 import * as winston from "winston"
 import express from "express"
 import { App } from "./app"
-import { createWinston, validateEnv } from "./utils"
-
-import { CarsController } from "./controllers/cars.controller"
 
 class Server {
-    private appInstance!: App
+    private app: App
+    private server!: http.Server
 
-    constructor() {
+    constructor(app: App) {
+        this.app = app
 
-    }
+        winston.info("Server instantiated")
+    }   
 
-    public start(): Promise<void> {
+    public listen(port: number | "@env"): Promise<void> {
         return new Promise((resolve: () => void, reject: () => void) => {
-            // Pre-requirements
-            this.registerWinstonLogger()
+            if (port === "@env") {
+                port = parseInt(process.env.APP_PORT || "8020")
+            }
 
-            // Sending log
-            winston.info("Server starting...")
+            let express: express.Application = this.app.getExpress()
 
-            // After-requirements
-            this.registerEnvironmentVariables()
-
-            // Start
-            this.startApplication()
-            .then(resolve)
-        })
-    }
-
-    public shutdown(): Promise<void> {
-        return new Promise((resolve: () => void, reject: () => void) => {
-            let server: http.Server = this.appInstance.getServer()
-            
-            server.close(() => {
-                winston.info("Server did shutdown")
+            this.server = express.listen(port, () => {
+                // @ts-ignore
+                let at = this.server.address().address
+                winston.info(`Server started listening on ${at}${port} in env \'${express.settings.env}\'`)
 
                 resolve()
             })
         })
     }
 
-    public getApp(): App {
-        return this.appInstance.getApp()
-    }
-
-    public getExpress(): express.Application {
-        return this.appInstance.getExpress()
-    }
-
-    public getServer(): http.Server {
-        return this.appInstance.getServer()
-    }
-
-    private registerWinstonLogger(): void {
-        createWinston()
-    }
-
-    private registerEnvironmentVariables(): void {
-        dotenv.config()
-
-        validateEnv()
-    }
-
-    private startApplication(): Promise<void> {
+    public shutdown(): Promise<void> {
         return new Promise((resolve: () => void, reject: () => void) => {
-            this.appInstance = new App({
-                port: parseInt(process.env.APP_PORT || "8070"),
-                controllers: [
-                    CarsController,
-                ],
-            })
+            let server: http.Server = this.server
+            
+            server.close(() => {
+                winston.info("Server did shutdown")
 
-            this.appInstance.start()
-            .then(resolve)
+                resolve()
+            })
         })
     }
 }

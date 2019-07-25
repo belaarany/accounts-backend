@@ -1,8 +1,8 @@
-import { Server } from "../../app/server"
+import { App } from "../../app/app"
 
 interface ICommandLoad {
     cli: any,
-    server: Server,
+    app: App,
 }
 
 import { Args, CommandInstance } from "vorpal"

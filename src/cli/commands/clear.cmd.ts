@@ -3,10 +3,10 @@ import { ACommand, ICommandLoad } from "../interfaces/command.interface"
 const clear = require("clear")
 
 module.exports = class extends ACommand {
-    protected server!: ICommandLoad["server"]
+    protected app!: ICommandLoad["app"]
 
     public load(props: ICommandLoad) {
-        props.server = props.server
+        props.app = props.app
         
         props.cli
             .command("clear")

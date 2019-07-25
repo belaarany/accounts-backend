@@ -5,10 +5,10 @@ const expressListEndpoints = require("express-list-endpoints")
 const consoleTable = require("cli-table")
 
 module.exports = class extends ACommand {
-    public server!: ICommandLoad["server"]
+    public app!: ICommandLoad["app"]
 
     public load = (props: ICommandLoad) => {
-        this.server = props.server
+        this.app = props.app
 
         props.cli
             .command("routes:list")
@@ -18,13 +18,11 @@ module.exports = class extends ACommand {
     }
 
     public action = (args: Args, done: () => void) => {
-        let server = this.server
-        let express = server.getExpress()
+        let app = this.app
+        let express = app.getExpress()
         let routes = expressListEndpoints(express._router)
-
-        var Table = require("cli-table")
  
-        var table = new Table({
+        var table = new consoleTable({
             head: ["Methods", "Path"]
         });
 

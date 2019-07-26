@@ -4,7 +4,12 @@ import * as winston from "winston"
 const validateEnv = (): void => {
     const validators: object = {
         APP_PORT: envalid.port(),
-        PASSWORD_SALT: envalid.str(),
+        
+        POSTGRES_HOST: envalid.str(),
+        POSTGRES_PORT: envalid.port(),
+        POSTGRES_USERNAME: envalid.str(),
+        POSTGRES_PASSWORD: envalid.str(),
+        POSTGRES_DATABASE: envalid.str(),
     }
 
     const options: envalid.CleanOptions = {

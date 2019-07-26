@@ -8,14 +8,13 @@ const config: ConnectionOptions = {
    password: "root",
    database: "topjoy_001",
    
-   synchronize: false,
+   synchronize: true,
 
    entities: [
       "src/app/models/**/*.entity.ts",
    ],
    migrations: [
-      "src/app/migrations/tables/**/*.ts",
-      "src/app/migrations/changes/**/*.ts",
+      "src/app/migrations/**/*.ts",
    ],
 }
 

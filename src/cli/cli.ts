@@ -27,7 +27,7 @@ function printMOTD(): void {
     console.log("===========================================")
     console.log("Welcome to the GOabela Accounts CLI")
     console.log()
-    console.log("To list the available commands, type \'help\'")
+    console.log("To list the available commands, type 'help'")
     console.log("===========================================")
     console.log()
 }

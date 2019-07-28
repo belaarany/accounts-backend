@@ -6,11 +6,11 @@ import * as bodyParser from "body-parser"
 import * as glob from "glob"
 import * as path from "path"
 import express from "express"
-import ormConfig from "./ormconfig"
 import typeORM, { createConnection } from "typeorm"
 import { IController } from "./interfaces/controller.interface"
 import { httpDebugMiddleware } from "./middlewares/httpDebug.middleware"
-import { createWinston, validateEnv } from "./utils"
+import { createWinston } from "./utils/createWinston"
+import { validateEnv } from "./utils/validateEnv"
 
 class App {
     private express!: express.Application
@@ -53,6 +53,10 @@ class App {
                 winston.info(`Application booted in ${Date.now() - this._applicationStart} ms`)
 
                 resolve(this.getApp())
+            })
+            .catch((error: any) => {
+                winston.error("Application cannot boot, error occurred")
+                winston.debug(`Application boot --> ${JSON.stringify(error)} | ${error}`)
             })
         })
     }
@@ -108,8 +112,8 @@ class App {
     }
 
     private createDatabaseConnection(): Promise<typeORM.Connection> {        
-        return new Promise((resolve: (connection: typeORM.Connection) => void, reject: (error: any) => void) => {
-            createConnection(ormConfig)
+        return new Promise((resolve: (connection: typeORM.Connection) => void, reject: (error?: any) => void) => {
+            createConnection()
             .then((connection: typeORM.Connection) => {
                 winston.info("Database connection successfully initiated")
                 winston.debug(`Database connection --> type: '${connection.options.type}' | database: '${connection.options.database}'`)

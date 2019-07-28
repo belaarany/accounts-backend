@@ -13,27 +13,52 @@ export interface ParsedErrors {
     [property: string]: string,
 }
 
-export const requestValidatorMiddleware = (type: any): express.RequestHandler => {
+export const requestValidatorMiddleware = (schemas: { params?: any, body?: any }): express.RequestHandler => {
     return (request: express.Request, response: express.Response, next: express.NextFunction): void => {
-        validateOrReject(plainToClass(type, request.body), validatorOptions)
+        let paramsValidation = validateSchema.bind(null, schemas.params, request.params, "params")
+        let bodyValidation = validateSchema.bind(null, schemas.body, request.body, "body")
+
+        Promise.resolve()
+        .then(() => paramsValidation())
+        .then(() => bodyValidation())
         .then(() => {
             next()
         })
-        .catch((errors: Array<ValidationError>) => {
-            let parsedErrors: object = parseErrors(errors)
+        .catch((error: { schema: "params" | "body", errors: Array<ValidationError> }) => {
+            let parsedErrors: object = parseErrors(error.errors)
 
-            winston.debug(`Request validation failed --> ${JSON.stringify(parsedErrors)}`)
+            winston.debug(`Request validation failed --> schema: '${error.schema}' | errors: '${JSON.stringify(parsedErrors)}'`)
 
             response
             .status(403)
             .send({
                 error: {
                     reason: "Invalid request",
+                    location: error.schema,
                     errors: parsedErrors,
                 }
             })
         })
     }
+}
+
+const validateSchema = (type: any, plain: Array<{}>, schema: "params" | "body"): Promise<any> => {
+    return new Promise((resolve: () => void, reject: (error: { schema: "params" | "body", errors: Array<ValidationError> }) => void) => {
+        if (type === undefined || type === null || plain === undefined || plain === null) {
+            resolve()
+        }
+
+        validateOrReject(plainToClass(type, plain), validatorOptions)
+        .then(() => {
+            resolve()
+        })
+        .catch((errors: Array<ValidationError>) => {
+            reject({
+                schema: schema,
+                errors: errors,
+            })
+        })
+    })
 }
 
 const parseErrors = (errors: Array<ValidationError>, path?: string, parsed?: {}): object => {

@@ -1,67 +1,63 @@
 import * as express from "express"
 import * as winston from "winston"
 import { getRepository, Repository } from "typeorm"
-import { Type } from "class-transformer"
-import { Length, MaxLength, ValidateNested, IsDefined } from "class-validator"
 import { IController, AController } from "../interfaces/controller.interface"
 import { requestValidatorMiddleware } from "../middlewares/requestValidator.middleware"
-import AccountEntity from "../models/account/account.entity"
-
-class FFegkjhewkgjwe {
-    @IsDefined()
-    @Length(10, 20)
-    sub: string
-}
-
-export class Gnrbigui {
-    @IsDefined()
-    @Length(10, 20)
-    word: string
-
-    /*@MaxLength(20, {
-        each: true
-    })
-    nested: Map<string, string>*/
-
-    @IsDefined()
-    @ValidateNested()
-    @Type(() => FFegkjhewkgjwe)
-    nested: FFegkjhewkgjwe
-}
+import { Account } from "../models/account/account.entity"
+import { GetParamsSchema, CreateBodySchema } from "../models/account/account.dto"
+import { returnCollection } from "../utils/returnCollection"
 
 export default class extends AController implements IController {
     public path: string = "/accounts"
     public router: express.Router = express.Router()
 
     constructor(
-        private readonly accountRepository: Repository<AccountEntity> = getRepository(AccountEntity)
+        private readonly accountRepository: Repository<Account> = getRepository(Account)
     ) {
         super()
         
         this.registerRoutes()
     }
 
-    private registerRoutes(): void {
+    private registerRoutes = (): void => {
         this.router
-        .post("", requestValidatorMiddleware(Gnrbigui), this.createAccount)
+        .get("", this.list)
+        .get("/:id", requestValidatorMiddleware({ params: GetParamsSchema }), this.get)
+        .post("", requestValidatorMiddleware({ body: CreateBodySchema }), this.create)
     }
 
-    private createAccount = (request: express.Request, response: express.Response, next: express.NextFunction): void => {
-        /*let account = this.accountRepository.create({
-            identifier: "belaarany",
-            password: "jkwbgjk34bkg",
-            profile_name: "Bela Arany",
+    public create = (request: express.Request, response: express.Response, next: express.NextFunction): void => {
+        let body: CreateBodySchema = request.body
+
+        let account: Account = this.accountRepository.create({
+            identifier: body.identifier,
+            password: body.password,
+            firstName: body.firstName,
+            lastName: body.lastName,
+            email: body.lastName,
         })
 
         this.accountRepository.save(account)
-        .then((result: AccountEntity) => {
+        .then((result: Account) => {
             winston.debug(`Account created --> ${JSON.stringify(result)}`)
 
-            console.log({result})
+            response.json(result)
+        })
+    }
 
-            response.send()
-        })*/
+    public list = (request: express.Request, response: express.Response, next: express.NextFunction): void => {
+        this.accountRepository.find()
+        .then((accounts: Array<Account>) => {
+            response.json(returnCollection("accounts.accountList", accounts))
+        })
+    }
 
-        response.send()
+    public get = (request: express.Request, response: express.Response, next: express.NextFunction): void => {
+        let params: GetParamsSchema = request.params.id
+
+        this.accountRepository.findOne(params.id)
+        .then((account: Account) => {
+            response.json(account)
+        })
     }
 }

@@ -1,8 +1,10 @@
-import { Entity, Column, PrimaryGeneratedColumn, AfterLoad, AfterInsert, AfterUpdate, AfterRemove } from "typeorm"
+import { Entity, Column, PrimaryGeneratedColumn, AfterLoad, AfterInsert, AfterUpdate, AfterRemove, UpdateDateColumn, CreateDateColumn } from "typeorm"
 import etag from "etag"
 
-@Entity()
-export default class Account {
+@Entity({
+    name: "accounts",
+})
+class Account {
 
     @PrimaryGeneratedColumn("uuid")
     id: string
@@ -23,11 +25,31 @@ export default class Account {
         length: 100,
         nullable: false,
     })
-    profile_name: string
+    email: string
 
-    kind: string = "account@accounts"
+    @Column({
+        length: 100,
+        nullable: false,
+    })
+    firstName: string
+
+    @Column({
+        length: 100,
+        nullable: false,
+    })
+    lastName: string
+
+    @CreateDateColumn()
+    createdAt: Date
+
+    @UpdateDateColumn()
+    updatedAt: Date
+
+    kind: string = "accounts.account"
 
     etag: string = undefined
+
+    name: string = undefined
 
     @AfterLoad()
     @AfterInsert()
@@ -39,5 +61,11 @@ export default class Account {
 
         // Generating E-Tag
         this.etag = etag(JSON.stringify(this))
+
+        // Generating the name
+        this.name = [this.firstName, this.lastName].join(" ")
     }
 }
+
+export default Account
+export { Account }

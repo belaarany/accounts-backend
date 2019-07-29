@@ -11,7 +11,7 @@ export class AuthenticationBodySchema {
     @IsDefined()
     //@IsUUID("4")
     @Length(1, 50)
-    authenticationSessionId: string
+    authSessionId: string
 
     @ValidateIf(o => o.step === 201 || o.step === 202)
     @IsDefined()

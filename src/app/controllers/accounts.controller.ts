@@ -12,7 +12,7 @@ export default class extends AController implements IController {
     public router: express.Router = express.Router()
 
     constructor(
-        private readonly accountRepository: Repository<Account> = getRepository(Account)
+        private readonly accountRepository: Repository<Account> = getRepository(Account),
     ) {
         super()
         
@@ -55,7 +55,7 @@ export default class extends AController implements IController {
     public get = (request: express.Request, response: express.Response, next: express.NextFunction): void => {
         let params: GetParamsSchema = request.params.id
 
-        this.accountRepository.findOne(params.id)
+        this.accountRepository.findOne({ id: params.id })
         .then((account: Account) => {
             response.json(account)
         })

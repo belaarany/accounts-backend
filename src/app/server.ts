@@ -1,7 +1,7 @@
 import * as http from "http"
 import * as winston from "winston"
 import express from "express"
-import { App } from "./app"
+import { App } from "~app/app"
 
 class Server {
     private app: App

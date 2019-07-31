@@ -1,29 +1,25 @@
 import * as express from "express"
 import * as winston from "winston"
-import * as tokenHandler from "../utils/tokenHandler"
+import * as tokenHandler from "@utils/tokenHandler"
 import moment from "moment"
 import { getRepository, Repository } from "typeorm"
-import { IController, AController } from "../interfaces/controller.interface"
-import { requestValidatorMiddleware } from "../middlewares/requestValidator.middleware"
-import { AuthSession } from "../models/authSession/authSession.entity"
-import { AuthenticationBodySchema } from "../models/authSession/authSession.dto"
-import { Account } from "../models/account/account.entity"
-import { returnCollection } from "../utils/returnCollection"
+import { IController, AController } from "~app/interfaces/controller.interface"
+import { requestValidatorMiddleware } from "@middlewares/requestValidator.middleware"
+import { AuthSession } from "@models/authSession/authSession.entity"
+import { AuthenticationBodySchema } from "@models/authSession/authSession.dto"
+import { Account } from "@models/account/account.entity"
 
 export default class extends AController implements IController {
     public path: string = "/authentication"
-    public router: express.Router = express.Router()
 
     constructor(
         private readonly authSessionRepository: Repository<AuthSession> = getRepository(AuthSession),
         private readonly accountRepository: Repository<Account> = getRepository(Account),
     ) {
         super()
-        
-        this.registerRoutes()
     }
 
-    private registerRoutes = (): void => {
+    public registerRoutes = (): void => {
         this.router
         .post("", requestValidatorMiddleware({ body: AuthenticationBodySchema }), this.handle)
     }
@@ -57,7 +53,7 @@ export default class extends AController implements IController {
             }
 
             case 201: {
-                this.lookupAccount("regular", body.identifier)
+                this.lookupAccount("one-time", body.identifier)
                 .then((accountId: string) => {
                     return Promise.all<void, void>([
                         this.assignAccountToSession(accountId, authSessionId),
@@ -72,7 +68,7 @@ export default class extends AController implements IController {
                     })
                 })
                 .catch(() => {
-                    response.send("Failed")
+                    this.errorResponse.send(response)
                 })
 
                 break
@@ -174,10 +170,25 @@ export default class extends AController implements IController {
 
     private lookupAccount = (by: "regular" | "one-time", identifier: string): Promise<string> => {
         return new Promise((resolve: (accountId: string) => void, reject: () => void) => {
-            this.accountRepository.findOne({ identifier: identifier })
-            .then((account: Account) => {
-                resolve (account.id)
-            })
+            switch (by) {
+                case "regular": {
+                    this.accountRepository.findOne({ identifier: identifier })
+                    .then((account: Account) => {
+                        resolve(account.id)
+                    })
+
+                    break
+                }
+
+               default: {
+                    this.errorResponse.addError({
+                        source: "server",
+                        message: "Invalid Account lookup method has been requested.",
+                    })
+
+                    reject()
+                }
+            }
         })
     }
 

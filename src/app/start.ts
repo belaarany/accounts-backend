@@ -1,6 +1,6 @@
 import clear from "clear"
-import { Server } from "./server"
-import { App } from "./App"
+import { Server } from "~app/server"
+import { App } from "~app/app"
 
 clear()
 

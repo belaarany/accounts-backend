@@ -1,5 +1,5 @@
 import clear from "clear"
-import * as tokenHandler from "../../app/utils/tokenHandler"
+import * as tokenHandler from "~app/utils/tokenHandler"
 import { Args, CommandInstance } from "vorpal"
 import { ACommand, ICommandLoad } from "../interfaces/command.interface"
 

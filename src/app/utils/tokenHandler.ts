@@ -11,7 +11,6 @@ const encode = (oid: string, payload?: any): string => {
     catch (e) {
         return ""
     }
-
 }
 
 const decode = (token: string): { oid: string, payload: any } => {

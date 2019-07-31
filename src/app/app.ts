@@ -7,10 +7,10 @@ import * as glob from "glob"
 import * as path from "path"
 import express from "express"
 import typeORM, { createConnection } from "typeorm"
-import { IController } from "./interfaces/controller.interface"
-import { httpDebugMiddleware } from "./middlewares/httpDebug.middleware"
-import { createWinston } from "./utils/createWinston"
-import { validateEnv } from "./utils/validateEnv"
+import { IController } from "~app/interfaces/controller.interface"
+import { httpDebugMiddleware } from "@middlewares/httpDebug.middleware"
+import { createWinston } from "@utils/createWinston"
+import { validateEnv } from "@utils/validateEnv"
 
 class App {
     private express!: express.Application
@@ -98,6 +98,7 @@ class App {
                 controllers.forEach((controller: { default: (new() => IController) }) => {
                     let _defaultExport: (new() => IController) = controller.default
                     let _class = new _defaultExport()
+                    _class.registerRoutes()
     
                     this.express.use(_class.path, _class.router)
     

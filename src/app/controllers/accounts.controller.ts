@@ -53,7 +53,7 @@ export default class extends AController implements IController {
     }
 
     public get = (request: express.Request, response: express.Response, next: express.NextFunction): void => {
-        let params: GetParamsSchema = request.params.id
+        let params: GetParamsSchema = request.params
 
         this.accountRepository.findOne({ id: params.id })
         .then((account: Account) => {

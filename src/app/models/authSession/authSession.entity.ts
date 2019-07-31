@@ -25,23 +25,37 @@ class AuthSession {
     }
 
     @Column({
-        type: "timestamp",
+        type: "timestamptz",
         nullable: false,
     })
     validUntil: Date
 
-    @CreateDateColumn()
+    @Column({
+        type: "timestamptz",
+        nullable: true,
+        default: null,
+    })
+    authenticatedAt: Date
+
+    @CreateDateColumn({
+        type: "timestamptz",
+    })
     createdAt: Date
 
-    @UpdateDateColumn()
+    @UpdateDateColumn({
+        type: "timestamptz",
+    })
     updatedAt: Date
+
+    isAuthenticated: boolean = undefined
 
     @AfterLoad()
     @AfterInsert()
     @AfterUpdate()
     @AfterRemove()
     AfterAll() {
-
+        // Is Authenticated
+        this.isAuthenticated = this.authenticatedAt === undefined || this.authenticatedAt === null ? false : true
     }
 }
 

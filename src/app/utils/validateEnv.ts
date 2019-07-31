@@ -4,6 +4,7 @@ import { IGetEnvs, getEnvs } from "./getEnvs"
 
 const validators: object = {
     APP_PORT: envalid.port(),
+    APP_TOKEN_SECRET: envalid.str(),
     
     TYPEORM_CONNECTION: envalid.str(),
     TYPEORM_HOST: envalid.host(),

@@ -1,7 +1,9 @@
 import * as express from "express"
 import * as winston from "winston"
+import snakecaseKeys from "snakecase-keys"
+import camelcaseKeys from "camelcase-keys"
 import { validateOrReject, ValidationError, ValidatorOptions  } from "class-validator"
-import { plainToClass } from "class-transformer"
+import { classToPlain, plainToClass } from "class-transformer"
 import { ErrorResponse } from "@helpers/errorResponse"
 
 const validatorOptions: ValidatorOptions = {
@@ -42,17 +44,18 @@ const validateSchema = (type: any, plain: Array<{}>, schema: "params" | "body"):
         if (type === undefined || type === null || plain === undefined || plain === null) {
             resolve()
         }
-
-        validateOrReject(plainToClass(type, plain), validatorOptions)
-        .then(() => {
-            resolve()
-        })
-        .catch((errors: Array<ValidationError>) => {
-            reject({
-                schema: schema,
-                errors: errors,
+        else {
+            validateOrReject(plainToClass(type, plain), validatorOptions)
+            .then(() => {
+                resolve()
             })
-        })
+            .catch((errors: Array<ValidationError>) => {
+                reject({
+                    schema: schema,
+                    errors: errors,
+                })
+            })
+        }
     })
 }
 

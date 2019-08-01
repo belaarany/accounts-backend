@@ -6,9 +6,11 @@ import * as bodyParser from "body-parser"
 import * as glob from "glob"
 import * as path from "path"
 import express from "express"
+import camelcaseKeys from "camelcase-keys"
 import typeORM, { createConnection } from "typeorm"
 import { IController } from "~app/interfaces/controller.interface"
 import { httpDebugMiddleware } from "@middlewares/httpDebug.middleware"
+import { preProcessRequestMiddleware, postProcessResponseMiddleware } from "@middlewares/processResponse.middleware"
 import { createWinston } from "@utils/createWinston"
 import { validateEnv } from "@utils/validateEnv"
 
@@ -86,6 +88,8 @@ class App {
     private registerMiddlewares(): void {
         this.express.use(bodyParser.json())
         this.express.use(httpDebugMiddleware())
+        this.express.use(postProcessResponseMiddleware())
+        this.express.use(preProcessRequestMiddleware())
     }
 
     private registerControllers(): Promise<void> {

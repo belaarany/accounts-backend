@@ -32,7 +32,7 @@ export default class extends AController implements IController {
             password: body.password,
             firstName: body.firstName,
             lastName: body.lastName,
-            email: body.lastName,
+            email: body.email,
         })
 
         this.accountRepository.save(account)

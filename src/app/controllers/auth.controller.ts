@@ -53,7 +53,7 @@ export default class extends AController implements IController {
             }
 
             case 201: {
-                this.lookupAccount("one-time", body.identifier)
+                this.lookupAccount("regular", body.identifier)
                 .then((accountId: string) => {
                     return Promise.all<void, void>([
                         this.assignAccountToSession(accountId, authSessionId),
@@ -86,7 +86,7 @@ export default class extends AController implements IController {
                         .then(() => {
                             response.json({
                                 authenticated: true,
-                                accesToken: "soon_" + Date.now(),
+                                accessToken: "soon_" + Date.now(),
                             })
                         })
                         .catch(() => {

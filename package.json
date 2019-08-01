@@ -45,6 +45,7 @@
 	},
 	"dependencies": {
 		"body-parser": "^1.19.0",
+		"camelcase-keys": "^6.0.1",
 		"chalk": "^2.4.2",
 		"class-transformer": "^0.2.3",
 		"class-validator": "^0.9.1",
@@ -56,6 +57,7 @@
 		"etag": "^1.8.1",
 		"express": "^4.17.1",
 		"express-list-endpoints": "^4.0.1",
+		"express-mung": "^0.5.1",
 		"glob": "^7.1.4",
 		"i": "^0.3.6",
 		"install": "^0.13.0",
@@ -63,8 +65,10 @@
 		"npm": "^6.10.2",
 		"pg": "^7.11.0",
 		"reflect-metadata": "^0.1.13",
+		"snakecase-keys": "^3.1.0",
 		"tsconfig-paths": "^3.8.0",
 		"typeorm": "^0.2.18",
+		"typeorm-naming-strategies": "^1.1.0",
 		"uuid": "^3.3.2",
 		"vorpal": "^1.12.0",
 		"winston": "^3.2.1"

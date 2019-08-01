@@ -1,24 +1,32 @@
 import { Type } from "class-transformer"
-import { IsDefined, IsUUID, IsEnum, IsNumber, ValidateIf, Length } from "class-validator"
+import { IsDefined, IsUUID, IsEnum, IsNumber, ValidateIf, IsString } from "class-validator"
+import { Step, EStep, Method, EMethod } from "@models/authSession/authSession.interface"
 
 export class AuthenticationBodySchema {
     @IsDefined()
-    @IsNumber()
-    @IsEnum([1, 201, 202, 301, 401])
-    step: number
-
-    @ValidateIf(o => o.step !== 1)
-    @IsDefined()
-    @Length(10, 500)
+    @IsString()
     authSessionToken: string
 
-    @ValidateIf(o => o.step === 201 || o.step === 202)
     @IsDefined()
-    @Length(3, 100)
-    identifier: string
+    @IsString()
+    data: string
+}
 
-    @ValidateIf(o => o.step === 301)
+export class AuthenticationParamsSchema {
     @IsDefined()
-    @Length(3, 500)
-    password: string
+    @IsEnum(EStep)
+    step: Step
+
+    @IsDefined()
+    @IsEnum(EMethod)
+    method: Method
+}
+
+export type AuthenticationResponseBody = {
+    authenticated: boolean
+    step?: string
+    methods?: Array<Method>
+    authSessionToken?: string
+    accessToken?: string
+    validUntil?: string
 }

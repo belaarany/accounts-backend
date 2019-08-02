@@ -71,7 +71,7 @@ const parseErrors = (errors: Array<ValidationError>, errorResponse: ErrorRespons
             errorResponse.addError({
                 source: "request",
                 location: "body",
-                field: error.property,
+                property: error.property,
                 message: _values[0],
             })
         }

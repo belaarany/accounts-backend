@@ -1,13 +1,13 @@
 import * as express from "express"
 import * as winston from "winston"
 import { getRepository, Repository } from "typeorm"
-import { IController, AController } from "../interfaces/controller.interface"
+import { Controller, WebController } from "../interfaces/controller.interface"
 import { requestValidatorMiddleware } from "@middlewares/requestValidator.middleware"
 import { Account } from "@models/account/account.entity"
 import { GetParamsSchema, CreateBodySchema } from "@models/account/account.dto"
 import { returnCollection } from "@utils/returnCollection"
 
-export default class extends AController implements IController {
+export default class extends WebController implements Controller {
     public path: string = "/accounts"
     public router: express.Router = express.Router()
 

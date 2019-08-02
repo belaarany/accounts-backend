@@ -8,7 +8,7 @@ import * as path from "path"
 import express from "express"
 import camelcaseKeys from "camelcase-keys"
 import typeORM, { createConnection } from "typeorm"
-import { IController } from "~app/interfaces/controller.interface"
+import { Controller } from "~app/interfaces/controller.interface"
 import { httpDebugMiddleware } from "@middlewares/httpDebug.middleware"
 import { preProcessRequestMiddleware, postProcessResponseMiddleware } from "@middlewares/processResponse.middleware"
 import { createWinston } from "@utils/createWinston"
@@ -99,8 +99,8 @@ class App {
                 return import(file)
             }))
             .then((controllers: any) => {
-                controllers.forEach((controller: { default: (new() => IController) }) => {
-                    let _defaultExport: (new() => IController) = controller.default
+                controllers.forEach((controller: { default: (new() => Controller) }) => {
+                    let _defaultExport: (new() => Controller) = controller.default
                     let _class = new _defaultExport()
                     _class.registerRoutes()
     

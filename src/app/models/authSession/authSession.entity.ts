@@ -35,6 +35,13 @@ class AuthSession {
     }
 
     @Column({
+        length: 30,
+        nullable: true,
+        default: null,
+    })
+    flowType: null | "authorization_code"
+
+    @Column({
         type: "timestamptz",
         nullable: false,
     })

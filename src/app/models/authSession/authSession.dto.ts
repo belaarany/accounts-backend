@@ -1,8 +1,15 @@
 import { Type } from "class-transformer"
-import { IsDefined, IsUUID, IsEnum, IsNumber, ValidateIf, IsString } from "class-validator"
+import { IsDefined, IsUUID, IsEnum, IsNumber, ValidateIf, IsString, IsOptional, IsIn } from "class-validator"
 import { Step, EStep, Method, EMethod } from "@models/authSession/authSession.interface"
+import { AccountPartial } from "@models/account/account.entity"
 
-export class AuthenticationBodySchema {
+export class AuthStaticBodySchema {
+    @IsDefined()
+    @IsIn(["authorization_code"])
+    flowType: "authorization_code"
+}
+
+export class AuthDynamicBodySchema {
     @IsDefined()
     @IsString()
     authSessionToken: string
@@ -12,7 +19,7 @@ export class AuthenticationBodySchema {
     data: string
 }
 
-export class AuthenticationParamsSchema {
+export class AuthParamsSchema {
     @IsDefined()
     @IsEnum(EStep)
     step: Step
@@ -22,11 +29,14 @@ export class AuthenticationParamsSchema {
     method: Method
 }
 
-export type AuthenticationResponseBody = {
+export type AuthResponseBody = {
     authenticated: boolean
     step?: string
     methods?: Array<Method>
     authSessionToken?: string
-    accessToken?: string
     validUntil?: string
+    account?: AccountPartial,
+    
+    flowType?: null | "authorization_code"
+    code?: string
 }

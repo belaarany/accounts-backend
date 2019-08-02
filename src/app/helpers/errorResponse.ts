@@ -2,10 +2,15 @@ import * as express from "express"
 import * as winston from "winston"
 import uuid from "uuid"
 
-interface ErrorResponseError {
+export type ErrorReason = 
+    "serverError" |
+    "invalidPassword"
+
+export type ErrorResponseError = {
     source: "request" | "server",
     location?: "header" | "body" | "parameter" | "query",
-    field?: string,
+    property?: string,
+    reason?: ErrorReason,
     message: string,
 }
 
@@ -48,7 +53,7 @@ class ErrorResponse {
             error: {
                 errors: this.errors,
                 code: this.code,
-                message: this.errors[0].message,
+                message: this.errors[0] && this.errors[0].message || "Unknown error",
                 uid: this.uuid,
             }
         }

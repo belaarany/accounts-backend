@@ -69,7 +69,23 @@ class Account {
         // Generating the name
         this.name = [this.firstName, this.lastName].join(" ")
     }
+
+    getPartial(): AccountPartial {
+        return {
+            kind: "accounts.account.partial",
+            name: this.name,
+            firstName: this.firstName,
+            lastName: this.lastName,
+        }
+    }
+}
+
+type AccountPartial = {
+    kind: "accounts.account.partial",
+    name: string,
+    firstName: string,
+    lastName: string,
 }
 
 export default Account
-export { Account }
+export { Account, AccountPartial }

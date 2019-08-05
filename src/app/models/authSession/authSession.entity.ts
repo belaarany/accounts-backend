@@ -22,7 +22,7 @@ class AuthSession {
         default: null,
     })
     stepsCompleted: {
-        [datetime: string]: Step
+        [step in Step]?: string
     }
 
     @Column({
@@ -31,7 +31,7 @@ class AuthSession {
         default: null,
     })
     methodsCompleted: {
-        [datetime: string]: Method
+        [method in Method]?: string
     }
 
     @Column({

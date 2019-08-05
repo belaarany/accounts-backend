@@ -10,6 +10,7 @@ import camelcaseKeys from "camelcase-keys"
 import typeORM, { createConnection } from "typeorm"
 import { Controller } from "~app/interfaces/controller.interface"
 import { httpDebugMiddleware } from "@middlewares/httpDebug.middleware"
+import { corsMiddleware } from "@middlewares/cors.middleware"
 import { preProcessRequestMiddleware, postProcessResponseMiddleware } from "@middlewares/processResponse.middleware"
 import { createWinston } from "@utils/createWinston"
 import { validateEnv } from "@utils/validateEnv"
@@ -87,6 +88,7 @@ class App {
 
     private registerMiddlewares(): void {
         this.express.use(bodyParser.json())
+        this.express.use(corsMiddleware())
         this.express.use(httpDebugMiddleware())
         this.express.use(postProcessResponseMiddleware())
         this.express.use(preProcessRequestMiddleware())

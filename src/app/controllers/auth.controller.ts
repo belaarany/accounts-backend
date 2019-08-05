@@ -32,6 +32,7 @@ export default class extends WebController implements Controller {
 
         try {
             let authSession: { authSessionId: string, valudUntil: Date } = await this.initializeSession({ flowType: body.flowType || null })
+            await this.addCompleted(authSession.authSessionId, "hello", "init")
             let nexts: { step: Step, methods: Array<Method> } = await this.getNexts(authSession.authSessionId)
             
             let responseBody: AuthResponseBody = {
@@ -59,7 +60,7 @@ export default class extends WebController implements Controller {
                 try {
                     let account: Account = await this.lookupAccount("regular", body.data)
                     await this.assignAccountToSession(account.id, authSessionId)
-                    await this.addCompleted(authSessionId, "lookup", "init")
+                    await this.addCompleted(authSessionId, "lookup", "identifier")
                     let nexts: { step: Step, methods: Array<Method> } = await this.getNexts(authSessionId)
 
                     let responseBody: AuthResponseBody = {
@@ -113,11 +114,13 @@ export default class extends WebController implements Controller {
     }
 
     private getNexts = (authSessionId: string): Promise<{ step: Step, methods: Array<Method> }> => {
-        return new Promise((resolve: (next: { step: Step, methods: Array<Method> }) => void, reject: () => void) => {
+        return new Promise((resolve: (next: { step: Step, methods: Array<Method> }) => void, reject: Function) => {
             this.authSessionRepository.findOne({ id: authSessionId })
             .then((authSession: AuthSession) => {
-                let stepsCompleted: Array<Step> = Object.values(authSession.stepsCompleted)
-                let methodsCompleted: Array<Method> = Object.values(authSession.methodsCompleted)
+                // @ts-ignore
+                let stepsCompleted: Array<Step> = Object.keys(authSession.stepsCompleted)
+                // @ts-ignore
+                let methodsCompleted: Array<Method> = Object.keys(authSession.methodsCompleted)
 
                 // If the length is 1 then only the initialization should have been done
                 if (stepsCompleted.length === 1) {
@@ -130,7 +133,7 @@ export default class extends WebController implements Controller {
                         })
                     }
                     else {
-                        reject()
+                        reject("1")
                     }
                 }
 
@@ -148,17 +151,17 @@ export default class extends WebController implements Controller {
                             })
                         }
                         else {
-                            reject()
+                            reject("2")
                         }
                     }
                     else {
-                        reject()
+                        reject("3")
                     }
                 }
 
                 // If no steps has been done then it's a bug
                 else {
-                    reject()
+                    reject("4")
                 }
             })
         })
@@ -167,12 +170,6 @@ export default class extends WebController implements Controller {
     private initializeSession = (data: { flowType: AuthStaticBodySchema["flowType"] }): Promise<{ authSessionId: string, valudUntil: Date }> => {
         return new Promise((resolve: (data: { authSessionId: string, valudUntil: Date }) => void, reject: () => void) => {
             let authSession: AuthSession = this.authSessionRepository.create({
-                stepsCompleted: {
-                    [moment.utc().format()]: "hello",
-                },
-                methodsCompleted: {
-                    [moment.utc().format()]: "init",
-                },
                 validUntil: moment().add(1, "hours").format(),
                 authenticatedAt: null,
                 flowType: data.flowType,
@@ -237,15 +234,15 @@ export default class extends WebController implements Controller {
                 this.authSessionRepository.update({ id: authSessionId }, {
                     stepsCompleted: {
                         ...authSession.stepsCompleted,
-                        [moment.utc().format()]: step,
+                        [step]: moment.utc().format(),
                     },
                     methodsCompleted: {
                         ...authSession.methodsCompleted,
-                        [moment.utc().format()]: method,
+                        [method]: moment.utc().format(),
                     },
                 })
                 .then(() => {
-                    resolve()
+                    resolve()                   
                 })
             })
         })

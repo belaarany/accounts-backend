@@ -186,24 +186,29 @@ export default class extends WebController implements Controller {
     }
 
     private lookupAccount = (by: "regular" | "one-time", identifier: string): Promise<Account> => {
-        return new Promise((resolve: (account: Account) => void, reject: () => void) => {
+        return new Promise((resolve: (account: Account) => void, reject: (error: ErrorResponseError) => void) => {
             switch (by) {
                 case "regular": {
-                    this.accountRepository.findOne({ identifier: identifier })
+                    this.accountRepository.findOneOrFail({ identifier: identifier })
                     .then((account: Account) => {
                         resolve(account)
+                    })
+                    .catch(() => {
+                        reject({
+                            source: "request",
+                            reason: "accountNotExists",
+                            message: "This Account does not exist.",
+                        })
                     })
 
                     break
                 }
 
                default: {
-                    this.errorResponse.addError({
+                    reject({
                         source: "server",
                         message: "Invalid Account lookup method has been requested.",
                     })
-
-                    reject()
                 }
             }
         })

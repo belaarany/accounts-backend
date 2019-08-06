@@ -6,9 +6,9 @@
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"cli": "ts-node src/cli/cli.ts",
-		"cli:dev": "nodemon -x npm run cli",
+		"cli:serve": "nodemon -x npm run cli",
 		"app": "ts-node src/app/start.ts",
-		"app:dev": "nodemon -x npm run app",
+		"app:serve": "nodemon -x npm run app",
 		"typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
 		"postinstall": "link-module-alias"
 	},

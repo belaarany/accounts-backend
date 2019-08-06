@@ -4,7 +4,8 @@ import uuid from "uuid"
 
 export type ErrorReason = 
     "serverError" |
-    "invalidPassword"
+    "invalidPassword" |
+    "accountNotExists"
 
 export type ErrorResponseError = {
     source: "request" | "server",

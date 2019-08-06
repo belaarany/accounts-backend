@@ -76,6 +76,7 @@ class Account {
             name: this.name,
             firstName: this.firstName,
             lastName: this.lastName,
+            avatarUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS34H69DfFSeutTyf7arnlbXxJ7Ezkx3J8rf7DUoDp6ocQZQrbNcQ",
         }
     }
 }
@@ -85,6 +86,7 @@ type AccountPartial = {
     name: string,
     firstName: string,
     lastName: string,
+    avatarUrl: string,
 }
 
 export default Account

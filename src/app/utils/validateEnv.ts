@@ -3,9 +3,10 @@ import * as winston from "winston"
 import { IGetEnvs, getEnvs } from "./getEnvs"
 
 const validators: object = {
-    APP_PORT: envalid.port(),
     APP_TOKEN_SECRET: envalid.str(),
-    
+    APP_PORT: envalid.port(),
+    APP_URL: envalid.url(),
+
     TYPEORM_CONNECTION: envalid.str(),
     TYPEORM_HOST: envalid.host(),
     TYPEORM_PORT: envalid.port(),
@@ -24,7 +25,7 @@ const validateEnv = (): void => {
                 winston.info("Environment variables loaded successfully")
 
                 const envFiltered: IGetEnvs = getEnvs()
-                    
+
                 winston.debug(`Env --> ${JSON.stringify(envFiltered)}`)
             }
             else {

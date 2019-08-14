@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, AfterLoad, AfterInsert, AfterUpdate, AfterRemove, UpdateDateColumn, CreateDateColumn } from "typeorm"
-import { Step, EStep, Method, EMethod } from "@models/authSession/authSession.interface"
+import { Step, StepEnum } from "@models/authSession/authSession.interface"
 
 @Entity({
     name: "authSessions",
@@ -23,15 +23,6 @@ class AuthSession {
     })
     stepsCompleted: {
         [step in Step]?: string
-    }
-
-    @Column({
-        type: "simple-json",
-        nullable: true,
-        default: null,
-    })
-    methodsCompleted: {
-        [method in Method]?: string
     }
 
     @Column({

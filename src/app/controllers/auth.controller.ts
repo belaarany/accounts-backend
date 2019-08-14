@@ -1,14 +1,15 @@
 import * as express from "express"
 import * as winston from "winston"
+import * as url from "url"
 import * as tokenHandler from "@utils/tokenHandler"
 import moment from "moment"
 import { getRepository, Repository } from "typeorm"
 import { Controller, WebController } from "~app/interfaces/controller.interface"
 import { requestValidatorMiddleware } from "@middlewares/requestValidator.middleware"
 import { AuthSession } from "@models/authSession/authSession.entity"
-import { AuthParamsSchema, AuthStaticBodySchema, AuthDynamicBodySchema, AuthResponseBody } from "@models/authSession/authSession.dto"
+import { AuthParamsSchema, AuthBodySchema, AuthResponseBody } from "@models/authSession/authSession.dto"
 import { Account } from "@models/account/account.entity"
-import { Step, Method } from "@models/authSession/authSession.interface"
+import { Step, StepEnum } from "@models/authSession/authSession.interface"
 import { ErrorResponseError } from "@helpers/errorResponse"
 
 export default class extends WebController implements Controller {
@@ -23,24 +24,24 @@ export default class extends WebController implements Controller {
 
     public registerRoutes = (): void => {
         this.router
-        .post("/hello/init/", requestValidatorMiddleware({ body: AuthStaticBodySchema }), this.handleStatic)
-        .post("/:step/:method", requestValidatorMiddleware({ params: AuthParamsSchema, body: AuthDynamicBodySchema }), this.handleDynamic)
+        .post("/init", requestValidatorMiddleware({ body: AuthBodySchema.Init }), this.handleInit)
+        .post("/lookup", requestValidatorMiddleware({ params: AuthParamsSchema, body: AuthBodySchema.Lookup }), this.handleLookup)
+        .post("/challenge", requestValidatorMiddleware({ params: AuthParamsSchema, body: AuthBodySchema.Challenge }), this.handleChallenge)
     }
 
-    public handleStatic = async (request: express.Request, response: express.Response, next: express.NextFunction): Promise<void> => {
-        let body: AuthStaticBodySchema = request.body
+    public handleInit = async (request: express.Request, response: express.Response, next: express.NextFunction): Promise<void> => {
+        let body: AuthBodySchema.Init = request.body
 
         try {
             let authSession: { authSessionId: string, valudUntil: Date } = await this.initializeSession({ flowType: body.flowType || null })
-            await this.addCompleted(authSession.authSessionId, "hello", "init")
-            let nexts: { step: Step, methods: Array<Method> } = await this.getNexts(authSession.authSessionId)
-            
+            await this.addCompleted(authSession.authSessionId, StepEnum.INIT)
+            let nextSteps: AuthResponseBody["nextSteps"] = await this.getNexts(authSession.authSessionId)
+
             let responseBody: AuthResponseBody = {
                 authenticated: false,
                 authSessionToken: tokenHandler.encode(authSession.authSessionId),
                 validUntil: moment(authSession.valudUntil).format(),
-                step: nexts.step,
-                methods: nexts.methods,
+                nextSteps: nextSteps,
             }
 
             response.json(responseBody)
@@ -50,23 +51,21 @@ export default class extends WebController implements Controller {
         }
     }
 
-    public handleDynamic = async (request: express.Request, response: express.Response, next: express.NextFunction): Promise<void> => {
-        let params: AuthParamsSchema = request.params
-        let body: AuthDynamicBodySchema = request.body
+    public handleLookup = async (request: express.Request, response: express.Response, next: express.NextFunction): Promise<void> => {
+        let body: AuthBodySchema.Lookup = request.body
         let authSessionId: string = tokenHandler.decode(body.authSessionToken).oid
 
-        switch (params.method) {
-            case "identifier": {
+        switch (body.step) {
+            case StepEnum.IDENTIFIER: {
                 try {
-                    let account: Account = await this.lookupAccount("regular", body.data)
+                    let account: Account = await this.lookupAccount("regular", body.identifier)
                     await this.assignAccountToSession(account.id, authSessionId)
-                    await this.addCompleted(authSessionId, "lookup", "identifier")
-                    let nexts: { step: Step, methods: Array<Method> } = await this.getNexts(authSessionId)
+                    await this.addCompleted(authSessionId, StepEnum.IDENTIFIER)
+					let nextSteps: AuthResponseBody["nextSteps"] = await this.getNexts(authSessionId)
 
                     let responseBody: AuthResponseBody = {
                         authenticated: false,
-                        step: nexts.step,
-                        methods: nexts.methods,
+                        nextSteps: nextSteps,
                         account: account.getPartial(),
                     }
 
@@ -78,12 +77,19 @@ export default class extends WebController implements Controller {
 
                 break
             }
+        }
+    }
 
-            case "password": {
+    public handleChallenge = async (request: express.Request, response: express.Response, next: express.NextFunction): Promise<void> => {
+        let body: AuthBodySchema.Challenge = request.body
+        let authSessionId: string = tokenHandler.decode(body.authSessionToken).oid
+
+        switch (body.step) {
+            case StepEnum.PASSWORD: {
                 try {
                     let accountId: string = await this.getAccountIdBySession(authSessionId)
-                    await this.validatePassword(accountId, body.data)
-                    await this.addCompleted(authSessionId, "challenge", "password"),
+                    await this.validatePassword(accountId, body.password)
+                    await this.addCompleted(authSessionId, StepEnum.PASSWORD),
                     await this.markSessionAsDone(authSessionId)
 
                     let responseBody: AuthResponseBody = {
@@ -101,7 +107,7 @@ export default class extends WebController implements Controller {
                 break
             }
 
-            default: {                
+            default: {
                 this.errorResponse.addError({
                     source: "request",
                     location: "parameter",
@@ -113,42 +119,37 @@ export default class extends WebController implements Controller {
         }
     }
 
-    private getNexts = (authSessionId: string): Promise<{ step: Step, methods: Array<Method> }> => {
-        return new Promise((resolve: (next: { step: Step, methods: Array<Method> }) => void, reject: Function) => {
+    private getNexts = (authSessionId: string): Promise<AuthResponseBody["nextSteps"]> => {
+        return new Promise((resolve: (nextSteps: AuthResponseBody["nextSteps"]) => void, reject: Function) => {
             this.authSessionRepository.findOne({ id: authSessionId })
             .then((authSession: AuthSession) => {
                 // @ts-ignore
                 let stepsCompleted: Array<Step> = Object.keys(authSession.stepsCompleted)
-                // @ts-ignore
-                let methodsCompleted: Array<Method> = Object.keys(authSession.methodsCompleted)
 
-                // If the length is 1 then only the initialization should have been done
                 if (stepsCompleted.length === 1) {
-                    if (stepsCompleted[0] === "hello") {
-                        resolve({
-                            step: "lookup",
-                            methods: [
-                                "identifier"
-                            ],
-                        })
+                    if (stepsCompleted[0] === StepEnum.INIT) {
+                        resolve([
+							{
+								step: StepEnum.IDENTIFIER,
+								url: url.resolve(process.env.APP_URL, [this.path, "lookup"].join("/")),
+							}
+						])
                     }
                     else {
                         reject("1")
                     }
                 }
 
-                // Else checking which steps has been done
                 else if (stepsCompleted.length > 1) {
 
-                    // If 1 and 201 has been done
                     if (stepsCompleted.length === 2) {
-                        if (stepsCompleted[0] === "hello" && stepsCompleted[1] === "lookup") {
-                            resolve({
-                                step: "challenge",
-                                methods: [
-                                    "password"
-                                ],
-                            })
+                        if (stepsCompleted[0] === StepEnum.INIT && stepsCompleted[1] === StepEnum.IDENTIFIER) {
+							resolve([
+								{
+									step: StepEnum.PASSWORD,
+									url: url.resolve(process.env.APP_URL, [this.path, "challenge"].join("/")),
+								}
+							])
                         }
                         else {
                             reject("2")
@@ -167,7 +168,7 @@ export default class extends WebController implements Controller {
         })
     }
 
-    private initializeSession = (data: { flowType: AuthStaticBodySchema["flowType"] }): Promise<{ authSessionId: string, valudUntil: Date }> => {
+    private initializeSession = (data: { flowType: AuthBodySchema.Init["flowType"] }): Promise<{ authSessionId: string, valudUntil: Date }> => {
         return new Promise((resolve: (data: { authSessionId: string, valudUntil: Date }) => void, reject: () => void) => {
             let authSession: AuthSession = this.authSessionRepository.create({
                 validUntil: moment().add(1, "hours").format(),
@@ -232,7 +233,7 @@ export default class extends WebController implements Controller {
         })
     }
 
-    private addCompleted = (authSessionId: string, step: Step, method: Method): Promise<void> => {
+    private addCompleted = (authSessionId: string, step: Step): Promise<void> => {
         return new Promise((resolve: () => void, reject: () => void) => {
             this.authSessionRepository.findOne({ id: authSessionId })
             .then((authSession: AuthSession) => {
@@ -241,13 +242,9 @@ export default class extends WebController implements Controller {
                         ...authSession.stepsCompleted,
                         [step]: moment.utc().format(),
                     },
-                    methodsCompleted: {
-                        ...authSession.methodsCompleted,
-                        [method]: moment.utc().format(),
-                    },
                 })
                 .then(() => {
-                    resolve()                   
+                    resolve()
                 })
             })
         })

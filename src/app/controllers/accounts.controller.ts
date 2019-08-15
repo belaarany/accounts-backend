@@ -6,6 +6,7 @@ import { requestValidatorMiddleware } from "@middlewares/requestValidator.middle
 import { Account } from "@models/account/account.entity"
 import { GetParamsSchema, CreateBodySchema } from "@models/account/account.dto"
 import { returnCollection } from "@utils/returnCollection"
+import { encryptPassword } from "@utils/encryptPassword"
 
 export default class extends WebController implements Controller {
     public path: string = "/accounts"
@@ -29,7 +30,8 @@ export default class extends WebController implements Controller {
 
         let account: Account = this.accountRepository.create({
             identifier: body.identifier,
-            password: body.password,
+            password: encryptPassword(body.password),
+            passwordEncryption: "bcrypt",
             firstName: body.firstName,
             lastName: body.lastName,
             email: body.email,
@@ -37,9 +39,16 @@ export default class extends WebController implements Controller {
 
         this.accountRepository.save(account)
         .then((result: Account) => {
-            winston.debug(`Account created --> ${JSON.stringify(result)}`)
+            // ---
+            // Do not return the result directly because it contains the password!
+            // ---
 
-            response.json(result)
+            this.accountRepository.findOneOrFail({ id: result.id })
+            .then((account: Account) => {
+                winston.debug(`Account created --> ${JSON.stringify(account)}`)
+    
+                response.json(account)
+            })
         })
     }
 
@@ -53,7 +62,7 @@ export default class extends WebController implements Controller {
     public get = (request: express.Request, response: express.Response, next: express.NextFunction): void => {
         let params: GetParamsSchema = request.params
 
-        this.accountRepository.findOne({ id: params.id })
+        this.accountRepository.findOneOrFail({ id: params.id })
         .then((account: Account) => {
             response.json(account)
         })

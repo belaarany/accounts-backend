@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, AfterLoad, AfterInsert, AfterUpdate, AfterRemove, UpdateDateColumn, CreateDateColumn } from "typeorm"
+import { Entity, Column, PrimaryGeneratedColumn, AfterLoad, AfterInsert, AfterUpdate, AfterRemove, UpdateDateColumn, CreateDateColumn, BeforeInsert, BeforeUpdate } from "typeorm"
 import etag from "etag"
 
 @Entity({
@@ -18,8 +18,16 @@ class Account {
     @Column({
         length: 100,
         nullable: false,
+        select: false,
     })
     password: string
+
+    @Column({
+        length: 20,
+        nullable: false,
+        select: false,
+    })
+    passwordEncryption: "bcrypt"
 
     @Column({
         length: 100,
@@ -61,7 +69,7 @@ class Account {
     @AfterRemove()
     AfterAll() {
         // Removing private columns
-        delete this.password
+        //delete this.password
 
         // Generating E-Tag
         this.etag = etag(JSON.stringify(this))

@@ -11,6 +11,7 @@ import { AuthParamsSchema, AuthBodySchema, AuthResponseBody } from "@models/auth
 import { Account } from "@models/account/account.entity"
 import { Step, StepEnum } from "@models/authSession/authSession.interface"
 import { ErrorResponseError } from "@helpers/errorResponse"
+import { encryptPassword, validatePassword } from "@utils/encryptPassword"
 
 export default class extends WebController implements Controller {
     public path: string = "/authentication"
@@ -252,15 +253,27 @@ export default class extends WebController implements Controller {
 
     private validatePassword = (accountId: string, plainPassword: string): Promise<void> => {
         return new Promise((resolve: () => void, reject: (error: ErrorResponseError) => void) => {
-            this.accountRepository.findOneOrFail({ id: accountId, password: plainPassword })
+            this.accountRepository
+            .createQueryBuilder("account")
+            .addSelect("account.password")
+            .where({ id: accountId })
+            .getOne()
             .then((account: Account) => {
                 if (
                     account !== undefined &&
                     account !== null &&
+                    Array.isArray(account) === false &&
+                    typeof account === "object" &&
                     Object.keys(account).length > 0 &&
-                    account.hasOwnProperty("kind") === true
+                    account.hasOwnProperty("kind") === true && 
+                    account.hasOwnProperty("password") === true
                 ) {
-                    resolve()
+                    if (validatePassword(plainPassword, account.password) === true) {
+                        resolve()
+                    }
+                    else {
+                        throw Error()
+                    }
                 }
                 else {
                     throw Error()

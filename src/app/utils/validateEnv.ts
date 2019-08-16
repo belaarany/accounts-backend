@@ -16,6 +16,7 @@ const validators: object = {
     TYPEORM_SYNCHRONIZE: envalid.bool(),
     TYPEORM_ENTITIES: envalid.str(),
     TYPEORM_MIGRATIONS: envalid.str(),
+    TYPEORM_LOGGING: envalid.str(),
 }
 
 const validateEnv = (): void => {

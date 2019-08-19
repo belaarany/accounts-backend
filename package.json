@@ -5,22 +5,12 @@
 	"main": "index.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"cli": "ts-node src/cli/cli.ts",
+		"cli": "ts-node -T -r tsconfig-paths/register src/cli/cli.ts",
 		"cli:serve": "nodemon -x npm run cli",
-		"app": "ts-node src/app/start.ts --transpile-only",
+		"app": "ts-node -r tsconfig-paths/register src/app/start.ts",
 		"app:serve": "nodemon -x npm run app",
-		"typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
-		"postinstall": "link-module-alias"
-	},
-	"_moduleAliases": {
-		"~src": "src",
-		"~app": "src/app",
-		"~cli": "src/cli",
-		"@controllers": "src/app/controllers",
-		"@helpers": "src/app/helpers",
-		"@middlewares": "src/app/middlewares",
-		"@models": "src/app/models",
-		"@utils": "src/app/utils"
+		"typeorm": "ts-node -T -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
+		"build": "tsc --build tsconfig.json"
 	},
 	"repository": {
 		"type": "git",
@@ -37,9 +27,9 @@
 		"@types/express": "^4.17.0",
 		"@types/node": "^12.6.8",
 		"@types/vorpal": "^1.11.0",
-		"link-module-alias": "^1.2.0",
 		"nodemon": "^1.19.1",
 		"ts-node": "^8.3.0",
+		"tsconfig-paths": "^3.8.0",
 		"tslint": "^5.18.0",
 		"typescript": "^3.5.3"
 	},
@@ -70,7 +60,6 @@
 		"pg": "^7.11.0",
 		"reflect-metadata": "^0.1.13",
 		"snakecase-keys": "^3.1.0",
-		"tsconfig-paths": "^3.8.0",
 		"typeorm": "^0.2.18",
 		"typeorm-naming-strategies": "^1.1.0",
 		"uuid": "^3.3.2",

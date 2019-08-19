@@ -1,5 +1,5 @@
 import { Type } from "class-transformer"
-import { Length, IsDefined, IsUUID, IsUrl } from "class-validator"
+import { Length, IsDefined, IsUUID, IsUrl, IsHexadecimal } from "class-validator"
 
 export namespace Request {
 	export namespace Create {
@@ -23,6 +23,15 @@ export namespace Request {
 			@IsDefined()
 			@IsUUID("4")
 			id: string
+		}
+	}
+
+	export namespace ExchangeClientId {
+		export class Params {
+			@IsDefined()
+			@IsHexadecimal()
+			@Length(32, 32)
+			clientId: string
 		}
 	}
 }

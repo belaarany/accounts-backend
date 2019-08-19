@@ -68,15 +68,15 @@ export class Application {
 	@AfterInsert()
 	@AfterUpdate()
 	@AfterRemove()
-	AfterAll() {}
+	AfterAll() {
+		// Generating E-Tag
+		this.etag = etag(JSON.stringify(this))
+	}
 
 	@BeforeInsert()
 	BeforeInsert() {
 		// Client ID
-		this.clientId = md5(Date.now())
-
-		// Generating E-Tag
-		this.etag = etag(JSON.stringify(this))
+		this.clientId = md5([Date.now(), Math.floor(10000 + Math.random() * 89998)].join(":"))
 	}
 
 	getPartial(): ApplicationPartial {

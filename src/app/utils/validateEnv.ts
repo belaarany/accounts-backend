@@ -6,6 +6,7 @@ const validators: object = {
     APP_TOKEN_SECRET: envalid.str(),
     APP_PORT: envalid.port(),
     APP_URL: envalid.url(),
+    APP_DEV_BEARER_TOKEN: envalid.str(),
 
     TYPEORM_CONNECTION: envalid.str(),
     TYPEORM_HOST: envalid.host(),

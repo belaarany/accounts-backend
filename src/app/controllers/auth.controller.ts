@@ -10,7 +10,7 @@ import { AuthSession } from "@models/authSession/authSession.entity"
 import { AuthParamsSchema, AuthBodySchema, AuthResponseBody } from "@models/authSession/authSession.dto"
 import { Account } from "@models/account/account.entity"
 import { Step, StepEnum } from "@models/authSession/authSession.interface"
-import { ErrorResponseError } from "@helpers/errorResponse"
+import { ErrorResponseError, ErrorReason } from "@helpers/errorResponse"
 import { encryptPassword, validatePassword } from "@utils/encryptPassword"
 
 export default class extends WebController implements Controller {
@@ -111,7 +111,8 @@ export default class extends WebController implements Controller {
             default: {
                 this.errorResponse.addError({
                     source: "request",
-                    location: "parameter",
+					location: "params",
+					reason: ErrorReason.Request.INVALID_PARAMETER_PROPERTY,
                     property: "method",
                     message: "Unknown parameter 'method' property has been passed.",
                 })
@@ -198,7 +199,7 @@ export default class extends WebController implements Controller {
                     .catch(() => {
                         reject({
                             source: "request",
-                            reason: "accountNotExists",
+                            reason: ErrorReason.Account.ACCOUNT_NOT_EXISTS,
                             message: "This Account does not exist.",
                         })
                     })
@@ -209,6 +210,7 @@ export default class extends WebController implements Controller {
                default: {
                     reject({
                         source: "server",
+						reason: ErrorReason.Account.INVALID_LOOKUP_METHOD,
                         message: "Invalid Account lookup method has been requested.",
                     })
                 }
@@ -265,7 +267,7 @@ export default class extends WebController implements Controller {
                     Array.isArray(account) === false &&
                     typeof account === "object" &&
                     Object.keys(account).length > 0 &&
-                    account.hasOwnProperty("kind") === true && 
+                    account.hasOwnProperty("kind") === true &&
                     account.hasOwnProperty("password") === true
                 ) {
                     if (validatePassword(plainPassword, account.password) === true) {
@@ -283,7 +285,7 @@ export default class extends WebController implements Controller {
                 reject({
                     source: "request",
                     message: "Invalid password",
-                    reason: "invalidPassword",
+                    reason: ErrorReason.Account.INVALID_PASSWORD,
                 })
             })
         })

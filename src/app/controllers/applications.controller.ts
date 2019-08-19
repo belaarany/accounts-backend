@@ -19,8 +19,11 @@ export default class extends WebController implements Controller {
 
 	public registerRoutes = (): void => {
 		this.router
-			/*.get("", this.list)
-		.get("/:id", requestValidatorMiddleware({ params: GetParamsSchema }), this.get)*/
+			.get(
+				"/exchangeClientId/:clientId",
+				requestValidatorMiddleware({ params: RequestSchema.ExchangeClientId.Params }),
+				this.exchangeClientId,
+			)
 			.get(
 				"/:id/partial",
 				requestValidatorMiddleware({ params: RequestSchema.GetPartial.Params }),
@@ -45,6 +48,21 @@ export default class extends WebController implements Controller {
 				winston.debug(`Application created --> ${JSON.stringify(application)}`)
 
 				response.json(application)
+			})
+		})
+	}
+
+	public exchangeClientId = (
+		request: express.Request,
+		response: express.Response,
+		next: express.NextFunction,
+	): void => {
+		let params: RequestSchema.ExchangeClientId.Params = request.params
+
+		this.applicationRepository.findOneOrFail({ clientId: params.clientId }).then((application: Application) => {
+			response.json({
+				kind: "applications.application.id",
+				id: application.id,
 			})
 		})
 	}

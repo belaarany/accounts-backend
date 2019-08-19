@@ -58,6 +58,7 @@
 		"envalid": "^5.0.0",
 		"etag": "^1.8.1",
 		"express": "^4.17.1",
+		"express-bearer-token": "^2.4.0",
 		"express-list-endpoints": "^4.0.1",
 		"express-mung": "^0.5.1",
 		"glob": "^7.1.4",

@@ -94,3 +94,7 @@ typings/
 
 # VS Code Workspace
 *.code-workspace
+
+# Build folder
+build
+dist

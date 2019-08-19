@@ -8,7 +8,7 @@ import * as path from "path"
 import express from "express"
 import camelcaseKeys from "camelcase-keys"
 import typeORM, { createConnection } from "typeorm"
-import { Controller } from "~app/interfaces/controller.interface"
+import { Controller, WebController } from "~app/interfaces/controller.interface"
 import {
 	httpDebugMiddleware,
 	corsMiddleware,
@@ -18,6 +18,12 @@ import {
 } from "@middlewares"
 import { createWinston } from "@utils/createWinston"
 import { validateEnv } from "@utils/validateEnv"
+
+import AccountsController from "@controllers/accounts.controller"
+import ApplicationController from "@controllers/applications.controller"
+import AuthController from "@controllers/auth.controller"
+
+const CONTROLLERS: (new () => Controller)[] = [AccountsController, ApplicationController, AuthController]
 
 class App {
 	private express!: express.Application
@@ -50,7 +56,7 @@ class App {
 					this.databaseConnection = connection
 
 					// Requirements that use database
-					return this.registerControllers()
+					return this.registerControllers(CONTROLLERS)
 				})
 				.then(() => {
 					winston.info(`Application booted in ${Date.now() - this._applicationStart} ms`)
@@ -95,28 +101,20 @@ class App {
 		this.express.use(preProcessRequestMiddleware())
 	}
 
-	private registerControllers(): Promise<void> {
+	private registerControllers(controllers: (new () => Controller)[]): Promise<void> {
 		return new Promise((resolve: () => void, reject: (error?: any) => void) => {
-			Promise.all(
-				glob.sync(__dirname + "/controllers/**/*.controller.ts").map(function(file: any) {
-					winston.debug(`Controller found --> file: '${path.basename(file)}'`)
-					return import(file)
-				}),
-			).then((controllers: any) => {
-				controllers.forEach((controller: { default: new () => Controller }) => {
-					let _defaultExport: new () => Controller = controller.default
-					let _class = new _defaultExport()
-					_class.registerRoutes()
+			controllers.forEach((controller: new () => Controller) => {
+				let _class = new controller()
+				_class.registerRoutes()
 
-					this.express.use(_class.path, _class.router)
+				this.express.use(_class.path, _class.router)
 
-					winston.debug(`Controller imported --> path: '${_class.path}'`)
-				})
-
-				winston.info("Controllers imported")
-
-				resolve()
+				winston.debug(`Controller imported --> path: '${_class.path}'`)
 			})
+
+			winston.info("Controllers imported")
+
+			resolve()
 		})
 	}
 

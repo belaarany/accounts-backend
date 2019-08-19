@@ -9,7 +9,6 @@
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
 		"moduleResolution": "node",
-		"noEmit": true,
 		"baseUrl": "./",
 		"paths": {
 			"~src/*": ["src/*"],

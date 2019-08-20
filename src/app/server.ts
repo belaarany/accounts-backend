@@ -24,11 +24,7 @@ class Server {
 			this.server = express.listen(port, () => {
 				// @ts-ignore
 				let at = this.server.address().address
-				winston.info(
-					`Server started listening at '${at}${port}' in env '${
-						express.settings.env
-					}'`
-				)
+				winston.info(`Server started listening at '${at}${port}' in env '${express.settings.env}'`)
 
 				resolve()
 			})

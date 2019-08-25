@@ -4,7 +4,8 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1",
+		"test:unit": "jest --config=jest-unit.json",
+		"test:e2e": "jest --config=jest-e2e.json --forceExit",
 		"cli": "ts-node -T -r tsconfig-paths/register src/cli/cli.ts",
 		"cli:serve": "nodemon -x npm run cli",
 		"app": "ts-node -r tsconfig-paths/register src/app/start.ts",
@@ -25,9 +26,13 @@
 	"devDependencies": {
 		"@types/dotenv": "^6.1.1",
 		"@types/express": "^4.17.0",
+		"@types/jest": "^24.0.18",
 		"@types/node": "^12.6.8",
 		"@types/vorpal": "^1.11.0",
+		"jest": "^24.9.0",
 		"nodemon": "^1.19.1",
+		"supertest": "^4.0.2",
+		"ts-jest": "^24.0.2",
 		"ts-node": "^8.3.0",
 		"tsconfig-paths": "^3.8.0",
 		"tslint": "^5.18.0",

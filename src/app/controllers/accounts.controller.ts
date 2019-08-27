@@ -7,64 +7,70 @@ import { Account } from "@models/account/account.entity"
 import { GetParamsSchema, CreateBodySchema } from "@models/account/account.dto"
 import { returnCollection } from "@utils/returnCollection"
 import { encryptPassword } from "@utils/encryptPassword"
+import { ErrorReason } from "../helpers/errorResponse"
 
 export default class extends WebController implements Controller {
-    public path: string = "/accounts"
-    public router: express.Router = express.Router()
+	public path: string = "/accounts"
+	public router: express.Router = express.Router()
 
-    constructor(
-        private readonly accountRepository: Repository<Account> = getRepository(Account),
-    ) {
-        super()
-    }
+	constructor(private readonly accountRepository: Repository<Account> = getRepository(Account)) {
+		super()
+	}
 
-    public registerRoutes = (): void => {
-        this.router
-        .get("", this.list)
-        .get("/:id", requestValidatorMiddleware({ params: GetParamsSchema }), this.get)
-        .post("", requestValidatorMiddleware({ body: CreateBodySchema }), this.create)
-    }
+	public registerRoutes = (): void => {
+		this.router
+			.get("", this.list)
+			.get("/:id", requestValidatorMiddleware({ params: GetParamsSchema }), this.get)
+			.post("", requestValidatorMiddleware({ body: CreateBodySchema }), this.create)
+	}
 
-    public create = (request: express.Request, response: express.Response, next: express.NextFunction): void => {
-        let body: CreateBodySchema = request.body
+	public create = (request: express.Request, response: express.Response, next: express.NextFunction): void => {
+		let body: CreateBodySchema = request.body
 
-        let account: Account = this.accountRepository.create({
-            identifier: body.identifier,
-            password: encryptPassword(body.password),
-            passwordEncryption: "bcrypt",
-            firstName: body.firstName,
-            lastName: body.lastName,
-            email: body.email,
-        })
+		let account: Account = this.accountRepository.create({
+			identifier: body.identifier,
+			password: encryptPassword(body.password),
+			passwordEncryption: "bcrypt",
+			firstName: body.firstName,
+			lastName: body.lastName,
+			email: body.email,
+		})
 
-        this.accountRepository.save(account)
-        .then((result: Account) => {
-            // ---
-            // Do not return the result directly because it contains the password!
-            // ---
+		this.accountRepository.save(account).then((result: Account) => {
+			// ---
+			// Do not return the result directly because it contains the password!
+			// ---
 
-            this.accountRepository.findOneOrFail({ id: result.id })
-            .then((account: Account) => {
-                winston.debug(`Account created --> ${JSON.stringify(account)}`)
-    
-                response.json(account)
-            })
-        })
-    }
+			this.accountRepository.findOneOrFail({ id: result.id }).then((account: Account) => {
+				winston.debug(`Account created --> ${JSON.stringify(account)}`)
 
-    public list = (request: express.Request, response: express.Response, next: express.NextFunction): void => {
-        this.accountRepository.find()
-        .then((accounts: Array<Account>) => {
-            response.json(returnCollection("accounts.accountList", accounts))
-        })
-    }
+				response.json(account)
+			})
+		})
+	}
 
-    public get = (request: express.Request, response: express.Response, next: express.NextFunction): void => {
-        let params: GetParamsSchema = request.params
+	public list = (request: express.Request, response: express.Response, next: express.NextFunction): void => {
+		this.accountRepository.find().then((accounts: Array<Account>) => {
+			response.json(returnCollection("accounts.accountList", accounts))
+		})
+	}
 
-        this.accountRepository.findOneOrFail({ id: params.id })
-        .then((account: Account) => {
-            response.json(account)
-        })
-    }
+	public get = (request: express.Request, response: express.Response, next: express.NextFunction): void => {
+		let params: GetParamsSchema = request.params
+
+		this.accountRepository
+			.findOneOrFail({ id: params.id })
+			.then((account: Account) => {
+				response.json(account)
+			})
+			.catch(error => {
+				this.errorResponse
+					.addError({
+						source: "request",
+						reason: ErrorReason.Account.ACCOUNT_NOT_EXISTS,
+						message: "This account does not exist.",
+					})
+					.send(response)
+			})
+	}
 }

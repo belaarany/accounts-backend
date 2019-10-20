@@ -18,7 +18,10 @@
 			"@helpers/*": ["src/app/helpers/*"],
 			"@middlewares/*": ["src/app/middlewares/*"],
 			"@models/*": ["src/app/models/*"],
-			"@utils/*": ["src/app/utils/*"]
+			"@utils/*": ["src/app/utils/*"],
+			"@services/*": ["src/app/services/*"],
+			"@exceptions": ["src/app/exceptions/index"],
+			"@exceptions/*": ["src/app/exceptions/*"]
 		}
 	},
 	"exclude": ["node_modules", "**/*.spec.ts", "**/*.test.ts"],

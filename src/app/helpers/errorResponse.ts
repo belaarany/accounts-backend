@@ -6,6 +6,7 @@ export namespace ErrorReason {
 	export enum Account {
 		INVALID_PASSWORD = "account.invalidPassword",
 		ACCOUNT_NOT_EXISTS = "account.accountNotExists",
+		ACCOUNT_ALREADY_EXISTS = "account.accountAlreadyExists",
 		INVALID_LOOKUP_METHOD = "account.invalidLookupMethod",
 	}
 
@@ -20,6 +21,7 @@ export namespace ErrorReason {
 
 	export enum Server {
 		SERVER_ERROR = "server.serverError",
+		UNKNOWN = "unknown.unknown",
 	}
 }
 

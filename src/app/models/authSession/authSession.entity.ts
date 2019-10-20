@@ -1,20 +1,10 @@
-import {
-	Entity,
-	Column,
-	PrimaryGeneratedColumn,
-	AfterLoad,
-	AfterInsert,
-	AfterUpdate,
-	AfterRemove,
-	UpdateDateColumn,
-	CreateDateColumn,
-} from "typeorm"
+import { Entity, Column, PrimaryGeneratedColumn, AfterLoad, AfterInsert, AfterUpdate, AfterRemove, UpdateDateColumn, CreateDateColumn } from "typeorm"
 import { Step, StepEnum } from "@models/authSession/authSession.interface"
 
 @Entity({
 	name: "authSessions",
 })
-class AuthSession {
+export class AuthSession {
 	@PrimaryGeneratedColumn("uuid")
 	id: string
 
@@ -42,25 +32,25 @@ class AuthSession {
 	flowType: null | "authorization_code"
 
 	@Column({
-		type: "timestamptz",
+		type: "datetime",
 		nullable: false,
 	})
 	validUntil: Date
 
 	@Column({
-		type: "timestamptz",
+		type: "datetime",
 		nullable: true,
 		default: null,
 	})
 	authenticatedAt: Date
 
 	@CreateDateColumn({
-		type: "timestamptz",
+		type: "datetime",
 	})
 	createdAt: Date
 
 	@UpdateDateColumn({
-		type: "timestamptz",
+		type: "datetime",
 	})
 	updatedAt: Date
 
@@ -77,4 +67,3 @@ class AuthSession {
 }
 
 export default AuthSession
-export { AuthSession }

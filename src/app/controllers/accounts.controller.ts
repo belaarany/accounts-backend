@@ -1,76 +1,86 @@
 import * as express from "express"
 import * as winston from "winston"
-import { getRepository, Repository } from "typeorm"
 import { Controller, WebController } from "../interfaces/controller.interface"
 import { requestValidatorMiddleware } from "@middlewares/requestValidator.middleware"
 import { Account } from "@models/account/account.entity"
-import { GetParamsSchema, CreateBodySchema } from "@models/account/account.dto"
+import { AccountDTO } from "@models/account/account.dto"
 import { returnCollection } from "@utils/returnCollection"
-import { encryptPassword } from "@utils/encryptPassword"
-import { ErrorReason } from "../helpers/errorResponse"
+import { ErrorReason } from "@helpers/errorResponse"
+import { AccountService } from "@services/account.service"
+import { AccountException } from "@exceptions"
 
 export default class extends WebController implements Controller {
 	public path: string = "/accounts"
 	public router: express.Router = express.Router()
 
-	constructor(private readonly accountRepository: Repository<Account> = getRepository(Account)) {
+	constructor(private readonly accountService: AccountService = new AccountService()) {
 		super()
 	}
 
 	public registerRoutes = (): void => {
 		this.router
 			.get("", this.list)
-			.get("/:id", requestValidatorMiddleware({ params: GetParamsSchema }), this.get)
-			.post("", requestValidatorMiddleware({ body: CreateBodySchema }), this.create)
+			.get("/:id", requestValidatorMiddleware({ params: AccountDTO.Request.Get.Params }), this.get)
+			.post("", requestValidatorMiddleware({ body: AccountDTO.Request.Create.Body }), this.create)
 	}
 
-	public create = (request: express.Request, response: express.Response, next: express.NextFunction): void => {
-		let body: CreateBodySchema = request.body
+	public create = async (request: express.Request, response: express.Response, next: express.NextFunction): Promise<void> => {
+		let body: AccountDTO.Request.Create.Body = request.body
 
-		let account: Account = this.accountRepository.create({
-			identifier: body.identifier,
-			password: encryptPassword(body.password),
-			passwordEncryption: "bcrypt",
-			firstName: body.firstName,
-			lastName: body.lastName,
-			email: body.email,
-		})
+		try {
+			let account: Account = await this.accountService.createAccount(body)
 
-		this.accountRepository.save(account).then((result: Account) => {
-			// ---
-			// Do not return the result directly because it contains the password!
-			// ---
-
-			this.accountRepository.findOneOrFail({ id: result.id }).then((account: Account) => {
-				winston.debug(`Account created --> ${JSON.stringify(account)}`)
-
-				response.json(account)
-			})
-		})
-	}
-
-	public list = (request: express.Request, response: express.Response, next: express.NextFunction): void => {
-		this.accountRepository.find().then((accounts: Array<Account>) => {
-			response.json(returnCollection("accounts.accountList", accounts))
-		})
-	}
-
-	public get = (request: express.Request, response: express.Response, next: express.NextFunction): void => {
-		let params: GetParamsSchema = request.params
-
-		this.accountRepository
-			.findOneOrFail({ id: params.id })
-			.then((account: Account) => {
-				response.json(account)
-			})
-			.catch(error => {
+			response.json(account)
+		} catch (e) {
+			if (e instanceof AccountException.Duplicated) {
+				this.errorResponse.addError(e.getErrorResponseError()).send(response)
+			} else {
 				this.errorResponse
 					.addError({
-						source: "request",
-						reason: ErrorReason.Account.ACCOUNT_NOT_EXISTS,
-						message: "This account does not exist.",
+						source: "server",
+						reason: ErrorReason.Server.UNKNOWN,
+						message: "Unknown error occurred.",
 					})
 					.send(response)
-			})
+			}
+		}
+	}
+
+	public list = async (request: express.Request, response: express.Response, next: express.NextFunction): Promise<void> => {
+		try {
+			let accounts: Account[] = await this.accountService.list()
+
+			response.json(returnCollection("accounts.accountList", accounts))
+		} catch (e) {
+			this.errorResponse
+				.addError({
+					source: "server",
+					reason: ErrorReason.Server.UNKNOWN,
+					message: "Unknown error occurred.",
+				})
+				.send(response)
+		}
+	}
+
+	public get = async (request: express.Request, response: express.Response, next: express.NextFunction): Promise<void> => {
+		let params: AccountDTO.Request.Get.Params = request.params
+
+		try {
+			let account: Account = await this.accountService.find(params.id)
+
+			response.json(account)
+		} catch (e) {
+			if (e instanceof AccountException.NotFound) {
+				this.errorResponse.addError(e.getErrorResponseError()).send(response)
+			} else {
+				this.errorResponse
+					.addError({
+						source: "server",
+						reason: ErrorReason.Server.UNKNOWN,
+						message: "Unknown error occurred.",
+					})
+					.send(response)
+			}
+		}
 	}
 }

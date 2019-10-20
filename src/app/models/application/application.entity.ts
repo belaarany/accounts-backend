@@ -51,12 +51,12 @@ export class Application {
 	callbackUrl: string
 
 	@CreateDateColumn({
-		type: "timestamptz",
+		type: "datetime",
 	})
 	createdAt: Date
 
 	@UpdateDateColumn({
-		type: "timestamptz",
+		type: "datetime",
 	})
 	updatedAt: Date
 

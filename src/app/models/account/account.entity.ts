@@ -16,13 +16,14 @@ import etag from "etag"
 @Entity({
 	name: "accounts",
 })
-class Account {
+export class Account {
 	@PrimaryGeneratedColumn("uuid")
 	id: string
 
 	@Column({
 		length: 100,
 		nullable: false,
+		unique: true,
 	})
 	identifier: string
 
@@ -43,6 +44,7 @@ class Account {
 	@Column({
 		length: 100,
 		nullable: false,
+		unique: true,
 	})
 	email: string
 
@@ -59,12 +61,12 @@ class Account {
 	lastName: string
 
 	@CreateDateColumn({
-		type: "timestamptz",
+		type: "datetime",
 	})
 	createdAt: Date
 
 	@UpdateDateColumn({
-		type: "timestamptz",
+		type: "datetime",
 	})
 	updatedAt: Date
 
@@ -95,13 +97,12 @@ class Account {
 			name: this.name,
 			firstName: this.firstName,
 			lastName: this.lastName,
-			avatarUrl:
-				"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS34H69DfFSeutTyf7arnlbXxJ7Ezkx3J8rf7DUoDp6ocQZQrbNcQ",
+			avatarUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS34H69DfFSeutTyf7arnlbXxJ7Ezkx3J8rf7DUoDp6ocQZQrbNcQ",
 		}
 	}
 }
 
-type AccountPartial = {
+export type AccountPartial = {
 	kind: "accounts.account.partial"
 	name: string
 	firstName: string
@@ -110,4 +111,3 @@ type AccountPartial = {
 }
 
 export default Account
-export { Account, AccountPartial }

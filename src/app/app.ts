@@ -9,13 +9,7 @@ import express from "express"
 import camelcaseKeys from "camelcase-keys"
 import typeORM, { createConnection } from "typeorm"
 import { Controller, WebController } from "~app/interfaces/controller.interface"
-import {
-	httpDebugMiddleware,
-	corsMiddleware,
-	preProcessRequestMiddleware,
-	postProcessResponseMiddleware,
-	tokenMiddleware,
-} from "@middlewares"
+import { httpDebugMiddleware, corsMiddleware, preProcessRequestMiddleware, postProcessResponseMiddleware, tokenMiddleware } from "@middlewares"
 import { createWinston } from "@utils/createWinston"
 import { validateEnv } from "@utils/validateEnv"
 
@@ -97,8 +91,8 @@ class App {
 		this.express.use(corsMiddleware())
 		this.express.use(httpDebugMiddleware())
 		this.express.use(tokenMiddleware())
-		this.express.use(postProcessResponseMiddleware())
 		this.express.use(preProcessRequestMiddleware())
+		this.express.use(postProcessResponseMiddleware())
 	}
 
 	private registerControllers(controllers: (new () => Controller)[]): Promise<void> {
@@ -123,11 +117,7 @@ class App {
 			createConnection()
 				.then((connection: typeORM.Connection) => {
 					winston.info("Database connection successfully initiated")
-					winston.debug(
-						`Database connection --> type: '${connection.options.type}' | database: '${
-							connection.options.database
-						}'`,
-					)
+					winston.debug(`Database connection --> type: '${connection.options.type}' | database: '${connection.options.database}'`)
 
 					this.databaseConnection = connection
 

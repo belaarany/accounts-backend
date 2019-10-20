@@ -10,6 +10,10 @@ export namespace ErrorReason {
 		INVALID_LOOKUP_METHOD = "account.invalidLookupMethod",
 	}
 
+	export enum Application {
+		NOT_EXISTS = "application.notExists",
+	}
+
 	export enum Authorization {
 		ACCESS_DENIED = "authorization.accessDenied",
 	}
@@ -29,7 +33,7 @@ export type ErrorResponseError = {
 	source: "request" | "server" | "authorization"
 	location?: "header" | "body" | "params" | "query"
 	property?: string
-	reason: ErrorReason.Account | ErrorReason.Authorization | ErrorReason.Request | ErrorReason.Server
+	reason: ErrorReason.Account | ErrorReason.Application | ErrorReason.Authorization | ErrorReason.Request | ErrorReason.Server
 	message: string
 }
 

@@ -1,16 +1,16 @@
 import * as winston from "winston"
 import { getRepository, Repository } from "typeorm"
+import { encryptPassword } from "@utils/encryptPassword"
+
 import { Account } from "@models/account/account.entity"
 import { AccountDTO } from "@models/account/account.dto"
-import { encryptPassword } from "@utils/encryptPassword"
 import { AccountException } from "@exceptions"
 
 export class AccountService {
 	constructor(private readonly accountRepository: Repository<Account> = getRepository(Account)) {}
 
-	public createAccount = async (dto: AccountDTO.Request.Create.Body): Promise<Account> => {
+	public create = async (dto: AccountDTO.Request.Create.Body): Promise<Account> => {
 		try {
-			// Referencing https://github.com/typeorm/typeorm/blob/master/docs/find-options.md#basic-options
 			let precheckExistingAccount: Account | undefined = await this.accountRepository.findOne({
 				where: [{ identifier: dto.identifier }, { email: dto.email }],
 			})

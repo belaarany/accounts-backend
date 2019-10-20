@@ -1,4 +1,4 @@
-import { Throwable } from "@exceptions/Throwable"
+import { Throwable } from "~src/app/helpers/Throwable"
 import { ErrorReason, ErrorResponseError } from "@helpers/errorResponse"
 
 export namespace AccountException {

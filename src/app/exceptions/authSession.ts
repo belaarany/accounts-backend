@@ -1,7 +1,7 @@
 import { Throwable } from "~src/app/helpers/Throwable"
 import { ErrorReason, ErrorResponseError } from "@helpers/errorResponse"
 
-export namespace ApplicationException {
+export namespace AuthSessionException {
 	export class NotFound extends Throwable {
 		constructor() {
 			super()

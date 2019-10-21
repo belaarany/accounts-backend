@@ -127,6 +127,8 @@ class App {
 					winston.error(`Database connection failed: '${error}'`)
 					winston.debug(JSON.stringify(error))
 
+					console.log({error})
+
 					reject(error)
 				})
 		})

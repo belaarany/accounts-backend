@@ -10,6 +10,10 @@ export namespace AuthSessionDTO {
 				@IsDefined()
 				@IsIn(["authorization_code"])
 				flowType: "authorization_code"
+
+				@IsOptional()
+				@IsString()
+				clientId: string
 			}
 		}
 

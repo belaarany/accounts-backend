@@ -2,7 +2,7 @@ import { Entity, Column, PrimaryGeneratedColumn, AfterLoad, AfterInsert, AfterUp
 import { Step, StepEnum } from "@models/authSession/authSession.interface"
 
 @Entity({
-	name: "authSessions",
+	name: "auth_sessions",
 })
 export class AuthSession {
 	@PrimaryGeneratedColumn("uuid")
@@ -30,6 +30,13 @@ export class AuthSession {
 		default: null,
 	})
 	flowType: null | "authorization_code"
+
+	@Column({
+		length: 100,
+		nullable: true,
+		default: null,
+	})
+	clientId: string
 
 	@Column({
 		type: "datetime",

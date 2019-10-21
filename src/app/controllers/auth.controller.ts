@@ -28,12 +28,12 @@ export default class extends WebController implements Controller {
 
 	public registerRoutes = (): void => {
 		this.router
-			.post("/init", requestValidatorMiddleware({ body: AuthSessionDTO.Request.Init.Body }), this.handleInit)
-			.post("/lookup", requestValidatorMiddleware({ body: AuthSessionDTO.Request.Lookup.Body }), this.handleLookup)
-			.post("/challenge", requestValidatorMiddleware({ body: AuthSessionDTO.Request.Challenge.Body }), this.handleChallenge)
+			.post("/init", requestValidatorMiddleware({ body: AuthSessionDTO.Request.Init.Body }), this.init)
+			.post("/lookup", requestValidatorMiddleware({ body: AuthSessionDTO.Request.Lookup.Body }), this.lookup)
+			.post("/challenge", requestValidatorMiddleware({ body: AuthSessionDTO.Request.Challenge.Body }), this.challenge)
 	}
 
-	public handleInit = async (request: express.Request, response: express.Response, next: express.NextFunction): Promise<void> => {
+	public init = async (request: express.Request, response: express.Response, next: express.NextFunction): Promise<void> => {
 		try {
 			let body: AuthSessionDTO.Request.Init.Body = request.body
 
@@ -62,7 +62,7 @@ export default class extends WebController implements Controller {
 		}
 	}
 
-	public handleLookup = async (request: express.Request, response: express.Response, next: express.NextFunction): Promise<void> => {
+	public lookup = async (request: express.Request, response: express.Response, next: express.NextFunction): Promise<void> => {
 		try {
 			let body: AuthSessionDTO.Request.Lookup.Body = request.body
 			let authSessionId: string = tokenHandler.decode(body.authSessionToken).oid
@@ -104,7 +104,7 @@ export default class extends WebController implements Controller {
 		}
 	}
 
-	public handleChallenge = async (request: express.Request, response: express.Response, next: express.NextFunction): Promise<void> => {
+	public challenge = async (request: express.Request, response: express.Response, next: express.NextFunction): Promise<void> => {
 		try {
 			let body: AuthSessionDTO.Request.Challenge.Body = request.body
 			let authSessionId: string = tokenHandler.decode(body.authSessionToken).oid

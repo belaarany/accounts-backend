@@ -34,18 +34,19 @@ export class AuthSessionService {
 		}
 	}
 
-	public initialize = async (data: { flowType: "authorization_code" }): Promise<{ authSessionId: string; valudUntil: Date }> => {
+	public initialize = async (data: { flowType: "authorization_code", clientId?: string }): Promise<{ authSessionId: string; valudUntil: Date }> => {
 		try {
 			if (data.flowType !== "authorization_code") {
 				throw new AuthSessionException.InvalidFlowType()
 			}
 
-			let authSessionPrepared: AuthSession = await this.authSessionRepository.create({
+			let authSessionPrepared: AuthSession = this.authSessionRepository.create({
 				validUntil: moment()
 					.add(1, "hours")
 					.format(),
 				authenticatedAt: null,
 				flowType: data.flowType,
+				clientId: data.clientId || null,
 			})
 
 			let authSession: AuthSession = await this.authSessionRepository.save(authSessionPrepared)

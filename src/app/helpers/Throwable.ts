@@ -6,4 +6,6 @@ class Throwable {
 
 Throwable.prototype = new Error()
 
+//const Throwable = Error
+
 export { Throwable }

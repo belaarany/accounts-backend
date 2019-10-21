@@ -46,57 +46,38 @@ export namespace AuthSessionDTO {
 			}
 		}
 	}
-}
 
-export namespace AuthBodySchema {
-	export class Init {
-		@IsDefined()
-		@IsIn(["authorization_code"])
-		flowType: "authorization_code"
-	}
+	export namespace Response {
+		export namespace Init {
+			export class Body {
+				authenticated: false
+				nextSteps: {
+					step: Step
+					url: string
+				}[]
+				authSessionToken: string
+				validUntil: string
+			}
+		}
 
-	export class Lookup {
-		@IsDefined()
-		@IsString()
-		authSessionToken: string
+		export namespace Lookup {
+			export class Body {
+				authenticated: false
+				nextSteps: {
+					step: Step
+					url: string
+				}[]
+				account: AccountPartial
+			}
+		}
 
-		@IsDefined()
-		@IsEnum(StepEnum)
-		step: StepEnum.IDENTIFIER
-
-		@IsDefined()
-		@IsString()
-		identifier: string
-	}
-
-	export class Challenge {
-		@IsDefined()
-		@IsString()
-		authSessionToken: string
-
-		@IsDefined()
-		@IsEnum(StepEnum)
-		step: StepEnum.PASSWORD | StepEnum.ONE_TIME_PASSWORD | StepEnum.BACKUP_CODE
-
-		@ValidateIf(o => o.step === StepEnum.PASSWORD)
-		@IsDefined()
-		@IsString()
-		password: string
+		export namespace Challenge {
+			export class Body {
+				authenticated: true
+				flowType: null | "authorization_code"
+				code: string
+			}
+		}
 	}
 }
 
-export class AuthParamsSchema {}
-
-export type AuthResponseBody = {
-	authenticated: boolean
-	nextSteps?: {
-		step: Step
-		url: string
-	}[]
-	authSessionToken?: string
-	validUntil?: string
-	account?: AccountPartial
-
-	flowType?: null | "authorization_code"
-	code?: string
-}

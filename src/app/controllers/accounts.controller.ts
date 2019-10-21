@@ -67,7 +67,7 @@ export default class extends WebController implements Controller {
 		let params: AccountDTO.Request.Get.Params = request.params
 
 		try {
-			let account: Account = await this.accountService.find(params.id)
+			let account: Account = await this.accountService.find({ id: params.id })
 
 			response.json(account)
 		} catch (e) {

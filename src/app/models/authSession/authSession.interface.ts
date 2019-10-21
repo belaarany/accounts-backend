@@ -7,3 +7,8 @@ export enum StepEnum {
 	ONE_TIME_PASSWORD = "ONE_TIME_PASSWORD",
 	BACKUP_CODE = "BACKUP_CODE",
 }
+
+export type NextStep = {
+	step: Step
+	url: string
+}

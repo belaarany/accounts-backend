@@ -29,4 +29,18 @@ export namespace AccountException {
 			}
 		}
 	}
+
+	export class InvalidPassword extends Throwable {
+		constructor() {
+			super()
+		}
+
+		public getErrorResponseError = (): ErrorResponseError => {
+			return {
+				source: "request",
+				reason: ErrorReason.Account.INVALID_PASSWORD,
+				message: "The provided password is invalid for the provided account.",
+			}
+		}
+	}
 }

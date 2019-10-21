@@ -16,6 +16,8 @@ export namespace ErrorReason {
 
 	export enum Authorization {
 		ACCESS_DENIED = "authorization.accessDenied",
+		INVALID_FLOW_TYPE = "authorization.invalidFlowType",
+		SESSION_NOT_EXISTS = "authorization.session.NotExists",
 	}
 
 	export enum Request {

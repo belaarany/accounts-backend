@@ -66,6 +66,7 @@
 		"pg": "^7.11.0",
 		"reflect-metadata": "^0.1.13",
 		"snakecase-keys": "^3.1.0",
+		"treeify": "^1.1.0",
 		"typeorm": "^0.2.18",
 		"typeorm-naming-strategies": "^1.1.0",
 		"uuid": "^3.3.2",

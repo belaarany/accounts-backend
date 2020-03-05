@@ -16,5 +16,8 @@ jobs:
         with:
           node-version: 12.x
         
-      - name: Installing dependencies
+      - name: Installing NPM packages
         run: npm install
+        
+      - name: Running the post-install script
+        run: npm run postinstall

@@ -8,7 +8,7 @@ const createWinston = (): void => {
     winston.configure({
         transports: [
             new winston.transports.Console({
-                level: "debug",
+                level: process.env.NODE_ENV === "test" ? "error" : "debug",
             })
         ],
         format: winston.format.combine(

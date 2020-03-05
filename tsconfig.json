@@ -9,21 +9,30 @@
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
 		"moduleResolution": "node",
-		"baseUrl": "./",
+		"baseUrl": ".",
 		"paths": {
+			"~src": ["src"],
 			"~src/*": ["src/*"],
+			"~app": ["src/app"],
 			"~app/*": ["src/app/*"],
+			"~cli": ["src/cli"],
 			"~cli/*": ["src/cli/*"],
+			"@controllers": ["src/app/controllers"],
 			"@controllers/*": ["src/app/controllers/*"],
+			"@helpers": ["src/app/helpers"],
 			"@helpers/*": ["src/app/helpers/*"],
+			"@middlewares": ["src/app/middlewares"],
 			"@middlewares/*": ["src/app/middlewares/*"],
+			"@models": ["src/app/models"],
 			"@models/*": ["src/app/models/*"],
+			"@utils": ["src/app/utils"],
 			"@utils/*": ["src/app/utils/*"],
+			"@services": ["src/app/services"],
 			"@services/*": ["src/app/services/*"],
-			"@exceptions": ["src/app/exceptions/index"],
+			"@exceptions": ["src/app/exceptions"],
 			"@exceptions/*": ["src/app/exceptions/*"]
 		}
 	},
 	"exclude": ["node_modules", "**/*.spec.ts", "**/*.test.ts"],
-	"include": ["src/**/*.ts"]
+	"include": ["src/**/*.ts", "test/**/*.ts"]
 }

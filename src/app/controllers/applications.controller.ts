@@ -45,7 +45,7 @@ export default class extends WebController implements Controller {
 	}
 
 	public get = async (request: express.Request, response: express.Response, next: express.NextFunction): Promise<void> => {
-		let params: ApplicationDTO.Request.Get.Params = request.params
+		let params: ApplicationDTO.Request.Get.Params = request.params as any
 
 		try {
 			let application: Application = await this.applicationService.find({ id: params.id })
@@ -67,7 +67,7 @@ export default class extends WebController implements Controller {
 	}
 
 	public getPartial = async (request: express.Request, response: express.Response, next: express.NextFunction): Promise<void> => {
-		let params: ApplicationDTO.Request.Get.Params = request.params
+		let params: ApplicationDTO.Request.Get.Params = request.params as any
 
 		try {
 			let application: Application = await this.applicationService.find({ id: params.id })
@@ -90,7 +90,7 @@ export default class extends WebController implements Controller {
 	}
 
 	public exchangeClientId = async (request: express.Request, response: express.Response, next: express.NextFunction): Promise<void> => {
-		let params: ApplicationDTO.Request.ExchangeClientId.Params = request.params
+		let params: ApplicationDTO.Request.ExchangeClientId.Params = request.params as any
 
 		try {
 			let application: Application = await this.applicationService.find({ clientId: params.clientId })

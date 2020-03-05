@@ -64,7 +64,7 @@ export default class extends WebController implements Controller {
 	}
 
 	public get = async (request: express.Request, response: express.Response, next: express.NextFunction): Promise<void> => {
-		let params: AccountDTO.Request.Get.Params = request.params
+		let params: AccountDTO.Request.Get.Params = request.params as any
 
 		try {
 			let account: Account = await this.accountService.find({ id: params.id })

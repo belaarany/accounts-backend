@@ -35,5 +35,9 @@ jobs:
       - name: Running the post-install script
         run: npm run postinstall
         
+      - name: Creating environment variable
+        run: |
+          cp .env.example .env          
+        
       - name: Running the End-2-End tests
         run: npm run test:e2e

@@ -34,3 +34,6 @@ jobs:
         
       - name: Running the post-install script
         run: npm run postinstall
+        
+      - name: Running the End-2-End tests
+        run: npm run test:e2e

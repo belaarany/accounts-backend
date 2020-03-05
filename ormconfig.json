@@ -1,0 +1,20 @@
+{
+	"type": "mysql",
+	"host": "localhost",
+	"port": 3306,
+	"username": "root",
+	"password": "",
+	"database": "goabela_accounts",
+	"entities": [
+		"src/app/models/**/*.entity.{ts,js}"
+	],
+	"migrations": [
+		"src/app/migrations/**/*.{ts,js}"
+	],
+	"cli": {
+		"migrationsDir": "src/app/migrations"
+	},
+	"synchronize": false,
+	"migrationsRun": false,
+	"logging": "none"
+}

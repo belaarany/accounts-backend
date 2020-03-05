@@ -1,0 +1,29 @@
+{
+	"compilerOptions": {
+		"outDir": "dist",
+		"module": "commonjs",
+		"target": "es5",
+		"noImplicitAny": false,
+		"sourceMap": false,
+		"esModuleInterop": true,
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+		"moduleResolution": "node",
+		"baseUrl": "./",
+		"paths": {
+			"~src/*": ["src/*"],
+			"~app/*": ["src/app/*"],
+			"~cli/*": ["src/cli/*"],
+			"@controllers/*": ["src/app/controllers/*"],
+			"@helpers/*": ["src/app/helpers/*"],
+			"@middlewares/*": ["src/app/middlewares/*"],
+			"@models/*": ["src/app/models/*"],
+			"@utils/*": ["src/app/utils/*"],
+			"@services/*": ["src/app/services/*"],
+			"@exceptions": ["src/app/exceptions/index"],
+			"@exceptions/*": ["src/app/exceptions/*"]
+		}
+	},
+	"exclude": ["node_modules", "**/*.spec.ts", "**/*.test.ts"],
+	"include": ["src/**/*.ts"]
+}

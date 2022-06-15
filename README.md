@@ -3,6 +3,7 @@
 OAuth Accounts Provider.
 
 ## 🚀 Tech stack
+- Typescript
 - NodeJS
 - ExpressJS
 - TypeORM
